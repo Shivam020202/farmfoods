@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farm Made Foods | Farm Visit Booking</title>
+    <meta name="description" content="Book an authentic farm visit with Farm Made Foods, featuring live slots, OTP verification, attendee details and optional feedback automation." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              farm: {
+                green: '#3F6B3A',
+                amber: '#E7B84C',
+                clay: '#F5EBD9',
+                soil: '#3C2F2A',
+                moss: '#6B8A5A',
+                cream: '#FFF8F1'
+              }
+            },
+            boxShadow: {
+              soft: '0 18px 45px -18px rgba(52, 61, 43, 0.28)'
+            },
+            fontFamily: {
+              display: ['Georgia', 'Times New Roman', 'serif'],
+              body: ['Inter', 'Segoe UI', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      html { scroll-behavior: smooth; }
+      body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #fffaf4 0%, #fff 45%, #f6f2ea 100%); }
+      .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.72); }
+      .farm-grid { background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 24px 24px; }
+    </style>
+  </head>
+  <body class="text-farm-soil antialiased">
+    <header class="sticky top-0 z-40 border-b border-black/5 bg-white/80 glass">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8">
+        <a href="#top" class="flex items-center gap-3 text-lg font-semibold tracking-[0.2em] uppercase text-farm-green">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-farm-green text-white shadow-soft">FM</span>
+          Farm Made Foods
+        </a>
+        <div class="hidden items-center gap-6 text-sm text-farm-soil/80 md:flex">
+          <a href="#experience" class="hover:text-farm-green">Experience</a>
+          <a href="#booking" class="hover:text-farm-green">Visit Booking</a>
+          <a href="#story" class="hover:text-farm-green">Our Story</a>
+        </div>
+        <button id="openBooking" class="rounded-full bg-farm-green px-5 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-farm-moss transition">Book a Visit</button>
+      </nav>
+    </header>
+
+    <main id="top" class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-6 lg:px-8 lg:py-10">
+      <section class="grid items-center gap-8 rounded-[32px] bg-[linear-gradient(140deg,#18321d_0%,#3f6b3a_50%,#6a8f55_100%)] p-6 text-white shadow-soft lg:grid-cols-[1.1fr,0.9fr] lg:p-10">
+        <div class="space-y-6">
+          <p class="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.28em] text-farm-clay">Authentic farm experiences • Free-range living</p>
+          <h1 class="max-w-xl font-display text-4xl leading-tight text-white md:text-5xl lg:text-6xl">Come walk the fields, meet the hens, and see where your food truly begins.</h1>
+          <p class="max-w-lg text-base text-white/85 md:text-lg">A gentle, grounded farm visit crafted for families, food lovers, and curious guests who want to understand the care behind every egg and bite.</p>
+          <div class="flex flex-wrap items-center gap-3 text-sm text-white/90">
+            <span class="rounded-full bg-white/10 px-4 py-2">Farm tours</span>
+            <span class="rounded-full bg-white/10 px-4 py-2">Seasonal produce</span>
+            <span class="rounded-full bg-white/10 px-4 py-2">Ethical, humane practices</span>
+          </div>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button id="openBooking2" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-farm-green shadow-soft hover:bg-farm-clay transition">Reserve your slot</button>
+            <a href="#experience" class="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition">Explore the visit</a>
+          </div>
+        </div>
+        <div class="rounded-[30px] border border-white/10 bg-white/10 p-3 shadow-soft">
+          <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80" alt="Farm landscape with green fields" class="h-[420px] w-full rounded-[24px] object-cover" />
+        </div>
+      </section>
+
+      <section id="experience" class="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+        <article class="rounded-[28px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
+          <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Why visitors love it</p>
+          <h2 class="mt-3 font-display text-3xl text-farm-soil">An immersive farm visit, not a showroom.</h2>
+          <p class="mt-4 text-farm-soil/80">Walk through open pastures, understand welfare-first farming, and enjoy a calm, personal visit with real farm stories from the people behind every product.</p>
+          <ul class="mt-6 space-y-4 text-sm text-farm-soil/85">
+            <li class="rounded-2xl bg-farm-clay p-4">Guided visits with transparent, humane farming insight.</li>
+            <li class="rounded-2xl bg-farm-clay p-4">Small groups so you can ask questions and experience the farm naturally.</li>
+            <li class="rounded-2xl bg-farm-clay p-4">Fresh farm produce, seasonal stories, and a warm, grounded greeting.</li>
+          </ul>
+        </article>
+        <div class="grid gap-6 md:grid-cols-2">
+          <article class="rounded-[28px] bg-white p-6 shadow-soft">
+            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80" alt="Fresh eggs in a basket" class="h-40 w-full rounded-2xl object-cover" />
+            <h3 class="mt-4 font-display text-2xl text-farm-soil">From pasture to plate</h3>
+            <p class="mt-2 text-sm text-farm-soil/75">See how free-range eggs and wholesome produce move from the fields to the kitchen with care.</p>
+          </article>
+          <article class="rounded-[28px] bg-white p-6 shadow-soft">
+            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80" alt="Family visiting a farm" class="h-40 w-full rounded-2xl object-cover" />
+            <h3 class="mt-4 font-display text-2xl text-farm-soil">A genuine farm feel</h3>
+            <p class="mt-2 text-sm text-farm-soil/75">The tone is warm, earthy, and personal—designed to feel like a real farm visit, not a polished sales page.</p>
+          </article>
+          <article class="rounded-[28px] bg-white p-6 shadow-soft md:col-span-2">
+            <div class="grid gap-4 md:grid-cols-3">
+              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Visitors</p><p class="mt-2 text-3xl font-semibold">12 max</p></div>
+              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Duration</p><p class="mt-2 text-3xl font-semibold">90 mins</p></div>
+              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Best for</p><p class="mt-2 text-3xl font-semibold">Families</p></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="story" class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
+        <article class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
+          <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Our story</p>
+          <h2 class="mt-3 font-display text-3xl text-farm-soil">A farm-first brand with roots in clean, ethical food.</h2>
+          <p class="mt-4 text-farm-soil/80">Farm Made Foods is built around practical care, real open spaces, and food you can trust. Our farm visit experience reflects that spirit: calm, transparent, and grounded in everyday farming life.</p>
+          <div class="mt-6 grid gap-4 md:grid-cols-2">
+            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">Free-range, humane rearing and strict quality standards.</div>
+            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">Real farm visits with room to ask how and why things are done.</div>
+          </div>
+        </article>
+        <article class="rounded-[30px] overflow-hidden bg-farm-soil text-white shadow-soft">
+          <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80" alt="Farm produce and eggs" class="h-56 w-full object-cover" />
+          <div class="p-6">
+            <h3 class="font-display text-2xl">What to expect on your day</h3>
+            <p class="mt-3 text-white/85 text-sm">A thoughtful walk through the farm, an introduction to our care standards, and a warm welcome to the places behind our eggs and foods.</p>
+          </div>
+        </article>
+      </section>
+
+      <section id="booking" class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Visit booking</p>
+            <h2 class="mt-3 font-display text-3xl text-farm-soil">Reserve a visit slot with a simple, guided form.</h2>
+            <p class="mt-3 max-w-2xl text-farm-soil/80">The booking flow below is designed for mobile and desktop, with real-time slot capacity, OTP verification, attendee data capture, and optional follow-up feedback automation.</p>
+          </div>
+          <button id="openBooking3" class="rounded-full bg-farm-green px-5 py-3 text-sm font-semibold text-white shadow-soft hover:bg-farm-moss transition">Open booking form</button>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Available slots</p><p class="mt-2 text-xl font-semibold text-farm-soil">Morning / Noon / Evening</p></div>
+          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Capacity</p><p class="mt-2 text-xl font-semibold text-farm-soil">8-12 guests per slot</p></div>
+          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Verification</p><p class="mt-2 text-xl font-semibold text-farm-soil">OTP on your phone</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-black/5 bg-white/80 py-6 text-center text-sm text-farm-soil/70">© 2026 Farm Made Foods. Farm visits crafted with care.</footer>
+
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 p-4">
+      <div class="w-full max-w-4xl rounded-[32px] bg-white shadow-2xl ring-1 ring-black/5">
+        <div class="flex items-start justify-between border-b border-black/5 p-5 lg:p-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.28em] text-farm-green">Farm visit booking</p>
+            <h3 class="mt-2 font-display text-2xl text-farm-soil">Book your authentic farm visit</h3>
+            <p class="mt-1 text-sm text-farm-soil/70">A responsive step-by-step flow with live slot capacity and OTP validation.</p>
+          </div>
+          <button id="closeModal" class="rounded-full border border-black/10 p-2 text-farm-soil/70 hover:bg-black/5">✕</button>
+        </div>
+
+        <div class="grid gap-0 lg:grid-cols-[0.9fr,1.1fr]">
+          <aside class="border-b border-black/5 bg-farm-clay/60 p-5 lg:border-b-0 lg:border-r lg:p-6">
+            <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Booking summary</p>
+            <div class="mt-4 space-y-3 text-sm text-farm-soil/80">
+              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Today’s available slots</strong><br />Morning • Noon • Evening</div>
+              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Capacity</strong><br /><span id="capacityLabel">8 seats left</span> in the selected slot.</div>
+              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Verification</strong><br />OTP will be sent to the phone number you provide.</div>
+            </div>
+            <div class="mt-6 rounded-2xl bg-farm-soil p-4 text-white shadow-soft">
+              <p class="text-xs uppercase tracking-[0.3em] text-farm-clay">Optional automation</p>
+              <p class="mt-2 text-sm text-white/85">We can save a short post-visit feedback note to your booking record for follow-up.</p>
+            </div>
+          </aside>
+
+          <div class="p-5 lg:p-6">
+            <div class="mb-5 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-farm-green">
+              <span id="stepBadge" class="rounded-full bg-farm-green/8 px-3 py-1">Step 1 of 4</span>
+              <span id="stepTitle" class="text-farm-soil/80">Choose your slot</span>
+            </div>
+
+            <form id="bookingForm" class="space-y-5">
+              <section data-step="1" class="step space-y-5">
+                <div class="grid gap-4 md:grid-cols-2">
+                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                    <span class="text-sm font-semibold text-farm-soil">Preferred date</span>
+                    <input id="visitDate" type="date" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none ring-0 focus:border-farm-green" />
+                  </label>
+                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                    <span class="text-sm font-semibold text-farm-soil">Number of attendees</span>
+                    <input id="attendeeCount" type="number" min="1" max="12" value="2" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
+                  </label>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-farm-soil">Select a slot</p>
+                  <div id="slotButtons" class="mt-3 grid gap-3 md:grid-cols-3"></div>
+                </div>
+              </section>
+
+              <section data-step="2" class="step hidden space-y-4">
+                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                  <p class="text-sm font-semibold text-farm-soil">Visitor details</p>
+                  <p class="text-xs text-farm-soil/60">Add one entry for each attendee. Aadhaar is collected for verification only.</p>
+                </div>
+                <div id="attendeeFields" class="space-y-4"></div>
+              </section>
+
+              <section data-step="3" class="step hidden space-y-5">
+                <div class="grid gap-4 md:grid-cols-2">
+                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                    <span class="text-sm font-semibold text-farm-soil">Full name</span>
+                    <input id="leadName" type="text" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
+                  </label>
+                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                    <span class="text-sm font-semibold text-farm-soil">Phone number</span>
+                    <input id="phone" type="tel" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="10-digit number" />
+                  </label>
+                </div>
+                <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                  <span class="text-sm font-semibold text-farm-soil">Email address</span>
+                  <input id="email" type="email" class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
+                </label>
+                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <button id="sendOtp" type="button" class="rounded-full bg-farm-green px-4 py-2 text-sm font-semibold text-white hover:bg-farm-moss transition">Send OTP</button>
+                    <span id="otpStatus" class="text-sm text-farm-soil/70">OTP will be sent to your mobile number.</span>
+                  </div>
+                  <div class="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+                    <input id="otpInput" type="text" inputmode="numeric" maxlength="6" class="w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="Enter 6-digit OTP" />
+                    <button id="verifyOtp" type="button" class="rounded-full bg-farm-soil px-4 py-2 text-sm font-semibold text-white hover:bg-black transition">Verify</button>
+                  </div>
+                  <p id="otpResult" class="mt-3 text-sm text-farm-green"></p>
+                </div>
+              </section>
+
+              <section data-step="4" class="step hidden space-y-5">
+                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                  <p class="text-sm font-semibold text-farm-soil">Confirmation & feedback</p>
+                  <p class="text-xs text-farm-soil/60">Add an optional note for post-visit follow-up automation.</p>
+                </div>
+                <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
+                  <span class="text-sm font-semibold text-farm-soil">Optional post-visit feedback message</span>
+                  <textarea id="feedbackMessage" rows="4" class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="We can auto-generate a warm thank-you note after the visit."></textarea>
+                </label>
+                <div id="reviewBox" class="rounded-2xl border border-black/5 bg-farm-clay/50 p-4 text-sm text-farm-soil/85 shadow-soft"></div>
+              </section>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button id="prevBtn" type="button" class="rounded-full border border-black/10 px-4 py-2 text-sm font-semibold text-farm-soil hover:bg-black/5 transition">Back</button>
+                <div class="flex items-center gap-3">
+                  <button id="nextBtn" type="button" class="rounded-full bg-farm-green px-5 py-2.5 text-sm font-semibold text-white hover:bg-farm-moss transition">Next step</button>
+                  <button id="submitBtn" type="submit" class="hidden rounded-full bg-farm-soil px-5 py-2.5 text-sm font-semibold text-white hover:bg-black transition">Confirm booking</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const slots = [
+        { id: 'morning', label: 'Morning', time: '8:30 AM – 10:30 AM', capacity: 8 },
+        { id: 'noon', label: 'Noon', time: '12:00 PM – 2:00 PM', capacity: 10 },
+        { id: 'evening', label: 'Evening', time: '4:00 PM – 6:00 PM', capacity: 7 }
+      ];
+
+      const slotButtons = document.getElementById('slotButtons');
+      const attendeeCountInput = document.getElementById('attendeeCount');
+      const attendeeFields = document.getElementById('attendeeFields');
+      const capacityLabel = document.getElementById('capacityLabel');
+      const reviewBox = document.getElementById('reviewBox');
+      const stepBadge = document.getElementById('stepBadge');
+      const stepTitle = document.getElementById('stepTitle');
+      const steps = Array.from(document.querySelectorAll('.step'));
+      let currentStep = 1;
+      let selectedSlot = slots[0].id;
+      let otpVerified = false;
+      let generatedOtp = '';
+
+      function renderSlots() {
+        slotButtons.innerHTML = '';
+        slots.forEach(slot => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `rounded-2xl border p-4 text-left shadow-soft transition ${selectedSlot === slot.id ? 'border-farm-green bg-farm-green text-white' : 'border-black/5 bg-white text-farm-soil hover:border-farm-green/50'}`;
+          btn.innerHTML = `<strong class="block text-sm">${slot.label}</strong><span class="text-xs ${selectedSlot === slot.id ? 'text-white/90' : 'text-farm-soil/70'}">${slot.time}</span><span class="mt-2 block text-xs ${selectedSlot === slot.id ? 'text-white/90' : 'text-farm-soil/60'}">Capacity: ${slot.capacity} guests</span>`;
+          btn.addEventListener('click', () => {
+            selectedSlot = slot.id;
+            renderSlots();
+            updateCapacityLabel();
+            updateReview();
+          });
+          slotButtons.appendChild(btn);
+        });
+      }
+
+      function updateCapacityLabel() {
+        const slot = slots.find(item => item.id === selectedSlot);
+        const remaining = Math.max(slot.capacity - Number(attendeeCountInput.value || 1), 0);
+        capacityLabel.textContent = `${remaining} seats left in the ${slot.label.toLowerCase()} slot`;
+      }
+
+      function renderAttendeeFields() {
+        const count = Math.max(1, Math.min(12, Number(attendeeCountInput.value || 1)));
+        attendeeFields.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl border border-black/5 bg-white p-4 shadow-soft';
+          card.innerHTML = `
+            <p class="text-sm font-semibold text-farm-soil">Attendee ${i + 1}</p>
+            <div class="mt-3 grid gap-3 md:grid-cols-3">
+              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">Name<input type="text" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" /></label>
+              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">DOB<input type="date" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" /></label>
+              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">Aadhaar<input type="text" inputmode="numeric" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" placeholder="12 digits" /></label>
+            </div>`;
+          attendeeFields.appendChild(card);
+        }
+        updateCapacityLabel();
+        updateReview();
+      }
+
+      function updateReview() {
+        const slot = slots.find(item => item.id === selectedSlot);
+        const count = Math.max(1, Math.min(12, Number(attendeeCountInput.value || 1)));
+        const feedback = document.getElementById('feedbackMessage').value.trim();
+        reviewBox.innerHTML = `
+          <p><strong>Slot:</strong> ${slot.label} (${slot.time})</p>
+          <p class="mt-1"><strong>Attendees:</strong> ${count}</p>
+          <p class="mt-1"><strong>Verification:</strong> ${otpVerified ? 'OTP verified successfully' : 'Pending OTP confirmation'}</p>
+          <p class="mt-1"><strong>Post-visit note:</strong> ${feedback ? feedback : 'Not provided — we can auto-generate one after confirmation.'}</p>
+        `;
+      }
+
+      function showStep(step) {
+        currentStep = step;
+        steps.forEach((s, index) => {
+          s.classList.toggle('hidden', Number(s.dataset.step) !== step);
+        });
+        stepBadge.textContent = `Step ${step} of 4`;
+        stepTitle.textContent = ['Choose your slot', 'Add attendee details', 'Verify contact & OTP', 'Confirm and save feedback'][step - 1];
+        document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
+        document.getElementById('nextBtn').classList.toggle('hidden', step === 4);
+        document.getElementById('submitBtn').classList.toggle('hidden', step !== 4);
+        updateReview();
+      }
+
+      document.getElementById('attendeeCount').addEventListener('input', () => {
+        renderAttendeeFields();
+        updateCapacityLabel();
+      });
+
+      document.getElementById('feedbackMessage').addEventListener('input', updateReview);
+
+      document.getElementById('sendOtp').addEventListener('click', () => {
+        const phone = document.getElementById('phone').value.trim();
+        if (!/^\d{10}$/.test(phone)) {
+          document.getElementById('otpStatus').textContent = 'Enter a valid 10-digit phone number to receive the OTP.';
+          return;
+        }
+        generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+        document.getElementById('otpStatus').textContent = `OTP sent to ${phone}. Demo code: ${generatedOtp}`;
+        document.getElementById('otpResult').textContent = 'Use the demo OTP shown above for this prototype.';
+      });
+
+      document.getElementById('verifyOtp').addEventListener('click', () => {
+        const entered = document.getElementById('otpInput').value.trim();
+        if (!generatedOtp) {
+          document.getElementById('otpResult').textContent = 'Please request an OTP first.';
+          return;
+        }
+        otpVerified = entered === generatedOtp;
+        document.getElementById('otpResult').textContent = otpVerified ? 'OTP verified successfully.' : 'OTP did not match. Please try again.';
+        updateReview();
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentStep === 1) {
+          if (!document.getElementById('visitDate').value) {
+            alert('Please select a preferred date.');
+            return;
+          }
+          if (Number(attendeeCountInput.value || 1) > slots.find(item => item.id === selectedSlot).capacity) {
+            alert('Selected slot capacity is too low for the number of attendees.');
+            return;
+          }
+        }
+        if (currentStep === 2) {
+          const names = Array.from(document.querySelectorAll('#attendeeFields input[type="text"]'));
+          const dob = Array.from(document.querySelectorAll('#attendeeFields input[type="date"]'));
+          const aadhaar = Array.from(document.querySelectorAll('#attendeeFields input[inputmode="numeric"]'));
+          if (names.some(n => !n.value.trim()) || dob.some(d => !d.value) || aadhaar.some(a => !/^\d{12}$/.test(a.value.trim()))) {
+            alert('Please complete all attendee fields with valid details.');
+            return;
+          }
+        }
+        if (currentStep === 3 && !otpVerified) {
+          alert('Please verify the OTP before continuing.');
+          return;
+        }
+        showStep(Math.min(4, currentStep + 1));
+      });
+
+      document.getElementById('prevBtn').addEventListener('click', () => showStep(Math.max(1, currentStep - 1)));
+
+      document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!otpVerified) {
+          alert('OTP verification is required to confirm your booking.');
+          return;
+        }
+
+        const feedback = document.getElementById('feedbackMessage').value.trim();
+        const autoMessage = feedback || 'Thank you for visiting Farm Made Foods. We value your time and look forward to welcoming you again.';
+
+        alert(`Booking confirmed!\n\nSlot: ${slots.find(item => item.id === selectedSlot).label}\nGuests: ${attendeeCountInput.value}\nFeedback note: ${autoMessage}`);
+        document.getElementById('bookingModal').classList.add('hidden');
+        document.getElementById('bookingModal').classList.remove('flex');
+      });
+
+      function openModal() {
+        document.getElementById('bookingModal').classList.remove('hidden');
+        document.getElementById('bookingModal').classList.add('flex');
+        showStep(1);
+        renderSlots();
+        renderAttendeeFields();
+        updateCapacityLabel();
+      }
+
+      document.getElementById('openBooking').addEventListener('click', openModal);
+      document.getElementById('openBooking2').addEventListener('click', openModal);
+      document.getElementById('openBooking3').addEventListener('click', openModal);
+      document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('bookingModal').classList.add('hidden');
+        document.getElementById('bookingModal').classList.remove('flex');
+      });
+
+      renderSlots();
+      renderAttendeeFields();
+      updateCapacityLabel();
+      showStep(1);
+    </script>
+  </body>
+</html>
