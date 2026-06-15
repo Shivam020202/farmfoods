@@ -1,528 +1,1687 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Farm Made Foods | Farm Visit Booking</title>
-    <meta name="description" content="Book an authentic farm visit with Farm Made Foods, featuring live slots, OTP verification, attendee details and optional feedback automation." />
+    <meta name="description"
+        content="Book an authentic farm visit with Farm Made Foods, featuring OTP verification, attendee details, and date selection." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              farm: {
-                green: '#3F6B3A',
-                amber: '#E7B84C',
-                clay: '#F5EBD9',
-                soil: '#3C2F2A',
-                moss: '#6B8A5A',
-                cream: '#FFF8F1'
-              }
-            },
-            boxShadow: {
-              soft: '0 18px 45px -18px rgba(52, 61, 43, 0.28)'
-            },
-            fontFamily: {
-              display: ['Georgia', 'Times New Roman', 'serif'],
-              body: ['Inter', 'Segoe UI', 'sans-serif']
-            }
-          }
-        }
-      };
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        farm: {
+                            green: '#2D5A3D',
+                            deep: '#1B3A28',
+                            amber: '#D4A843',
+                            clay: '#F0E6D3',
+                            soil: '#2C2420',
+                            moss: '#5A8A6A',
+                            cream: '#FBF7F0',
+                            sage: '#8BAA94',
+                            bark: '#6B5B4E',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['DM Serif Display', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
     <style>
-      html { scroll-behavior: smooth; }
-      body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #fffaf4 0%, #fff 45%, #f6f2ea 100%); }
-      .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.72); }
-      .farm-grid { background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 24px 24px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FBF7F0;
+            color: #2C2420;
+            overflow-x: hidden;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .anim-fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .anim-fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .anim-slide-right {
+            animation: slideRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .anim-float {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .anim-scale-in {
+            animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .anim-delay-1 {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+
+        .anim-delay-2 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .anim-delay-3 {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .anim-delay-4 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f2318 0%, #1a3a25 25%, #2d5a3d 50%, #3a6e4a 75%, #4a8058 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(27, 58, 40, 0.85);
+            backdrop-filter: blur(20px);
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(15, 35, 24, 0.8) 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #2D5A3D, #5A8A6A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .organic-border {
+            border-radius: 2rem;
+            position: relative;
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 60px -15px rgba(44, 36, 32, 0.15);
+        }
+
+        .place-card {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .place-card.selected {
+            border-color: #2D5A3D !important;
+            background: linear-gradient(135deg, #2D5A3D, #3a6e4a) !important;
+            color: white !important;
+            box-shadow: 0 15px 40px -10px rgba(45, 90, 61, 0.35);
+        }
+
+        .place-card.selected * {
+            color: white !important;
+        }
+
+        .place-card.selected .place-sub {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(44, 36, 32, 0.08), transparent);
+        }
+
+        /* Modal sidebar */
+        @media (max-width: 767px) {
+            .modal-body {
+                flex-direction: column !important;
+            }
+
+            .desktop-sidebar {
+                display: none !important;
+            }
+
+            .mobile-stepper {
+                display: flex !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-stepper {
+                display: none !important;
+            }
+
+            .desktop-sidebar {
+                display: flex !important;
+            }
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.4);
+            cursor: pointer;
+        }
+
+        .dot-pattern {
+            background-image: radial-gradient(circle, rgba(45, 90, 61, 0.06) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Liquid Glass Navbar */
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.06),
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-glass::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0.05) 40%,
+                rgba(255, 255, 255, 0.02) 60%,
+                rgba(255, 255, 255, 0.08) 100%
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .nav-glass::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.5) 20%,
+                rgba(255, 255, 255, 0.8) 50%,
+                rgba(255, 255, 255, 0.5) 80%,
+                transparent 100%
+            );
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .nav-glass-dark {
+            background: rgba(15, 35, 24, 0.35);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-glass-dark::before {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.02) 40%,
+                rgba(255, 255, 255, 0.01) 60%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+        }
+
+        .nav-glass-dark::after {
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.2) 20%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0.2) 80%,
+                transparent 100%
+            );
+        }
     </style>
-  </head>
-  <body class="text-farm-soil antialiased">
-    <header class="sticky top-0 z-40 border-b border-black/5 bg-white/80 glass">
-      <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-8">
-        <a href="#top" class="flex items-center gap-3 text-lg font-semibold tracking-[0.2em] uppercase text-farm-green">
-          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-farm-green text-white shadow-soft">FM</span>
-          Farm Made Foods
-        </a>
-        <div class="hidden items-center gap-6 text-sm text-farm-soil/80 md:flex">
-          <a href="#experience" class="hover:text-farm-green">Experience</a>
-          <a href="#booking" class="hover:text-farm-green">Visit Booking</a>
-          <a href="#story" class="hover:text-farm-green">Our Story</a>
-        </div>
-        <button id="openBooking" class="rounded-full bg-farm-green px-5 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-farm-moss transition">Book a Visit</button>
-      </nav>
+</head>
+
+<body>
+
+    <!-- ═══════════════ LIQUID GLASS NAVBAR ═══════════════ -->
+    <header class="fixed top-0 left-0 right-0 z-50 pt-4 px-4 sm:px-6 lg:px-8 transition-all duration-500" id="siteHeader">
+        <nav class="mx-auto max-w-[900px] nav-glass nav-glass-dark rounded-full px-2 py-2 flex items-center justify-between transition-all duration-500" id="navPill">
+            <!-- Logo -->
+            <a href="#top" class="flex items-center gap-2.5 pl-3 pr-2 py-1.5 group relative z-10">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white text-[10px] font-bold tracking-wider backdrop-blur-sm border border-white/10 group-hover:bg-white/25 transition-all duration-300 group-hover:scale-105">FM</span>
+                <span class="font-serif text-[15px] text-white/90 hidden sm:block group-hover:text-white transition-colors duration-300">Farm Made Foods</span>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden lg:flex items-center gap-1 relative z-10">
+                <a href="#experience" class="px-4 py-2 text-[12px] font-medium text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 tracking-wide">Experience</a>
+                <a href="#gallery" class="px-4 py-2 text-[12px] font-medium text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 tracking-wide">Gallery</a>
+                <a href="#story" class="px-4 py-2 text-[12px] font-medium text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 tracking-wide">Story</a>
+                <a href="#faq" class="px-4 py-2 text-[12px] font-medium text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 tracking-wide">FAQ</a>
+            </nav>
+
+            <!-- CTA -->
+            <button id="openBooking"
+                class="relative z-10 rounded-full bg-white/15 hover:bg-white/25 text-white px-5 py-2 text-[12px] font-semibold tracking-wide backdrop-blur-sm border border-white/15 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_4px_20px_rgba(255,255,255,0.1)] whitespace-nowrap">
+                Book a Visit
+            </button>
+        </nav>
     </header>
 
-    <main id="top" class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-6 lg:px-8 lg:py-10">
-      <section class="grid items-center gap-8 rounded-[32px] bg-[linear-gradient(140deg,#18321d_0%,#3f6b3a_50%,#6a8f55_100%)] p-6 text-white shadow-soft lg:grid-cols-[1.1fr,0.9fr] lg:p-10">
-        <div class="space-y-6">
-          <p class="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.28em] text-farm-clay">Authentic farm experiences • Free-range living</p>
-          <h1 class="max-w-xl font-display text-4xl leading-tight text-white md:text-5xl lg:text-6xl">Come walk the fields, meet the hens, and see where your food truly begins.</h1>
-          <p class="max-w-lg text-base text-white/85 md:text-lg">A gentle, grounded farm visit crafted for families, food lovers, and curious guests who want to understand the care behind every egg and bite.</p>
-          <div class="flex flex-wrap items-center gap-3 text-sm text-white/90">
-            <span class="rounded-full bg-white/10 px-4 py-2">Farm tours</span>
-            <span class="rounded-full bg-white/10 px-4 py-2">Seasonal produce</span>
-            <span class="rounded-full bg-white/10 px-4 py-2">Ethical, humane practices</span>
-          </div>
-          <div class="flex flex-wrap gap-3 pt-2">
-            <button id="openBooking2" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-farm-green shadow-soft hover:bg-farm-clay transition">Reserve your slot</button>
-            <a href="#experience" class="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition">Explore the visit</a>
-          </div>
-        </div>
-        <div class="rounded-[30px] border border-white/10 bg-white/10 p-3 shadow-soft">
-          <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=900&q=80" alt="Farm landscape with green fields" class="h-[420px] w-full rounded-[24px] object-cover" />
-        </div>
-      </section>
+    <main id="top">
 
-      <section id="experience" class="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
-        <article class="rounded-[28px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
-          <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Why visitors love it</p>
-          <h2 class="mt-3 font-display text-3xl text-farm-soil">An immersive farm visit, not a showroom.</h2>
-          <p class="mt-4 text-farm-soil/80">Walk through open pastures, understand welfare-first farming, and enjoy a calm, personal visit with real farm stories from the people behind every product.</p>
-          <ul class="mt-6 space-y-4 text-sm text-farm-soil/85">
-            <li class="rounded-2xl bg-farm-clay p-4">Guided visits with transparent, humane farming insight.</li>
-            <li class="rounded-2xl bg-farm-clay p-4">Small groups so you can ask questions and experience the farm naturally.</li>
-            <li class="rounded-2xl bg-farm-clay p-4">Fresh farm produce, seasonal stories, and a warm, grounded greeting.</li>
-          </ul>
-        </article>
-        <div class="grid gap-6 md:grid-cols-2">
-          <article class="rounded-[28px] bg-white p-6 shadow-soft">
-            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=800&q=80" alt="Fresh eggs in a basket" class="h-40 w-full rounded-2xl object-cover" />
-            <h3 class="mt-4 font-display text-2xl text-farm-soil">From pasture to plate</h3>
-            <p class="mt-2 text-sm text-farm-soil/75">See how free-range eggs and wholesome produce move from the fields to the kitchen with care.</p>
-          </article>
-          <article class="rounded-[28px] bg-white p-6 shadow-soft">
-            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80" alt="Family visiting a farm" class="h-40 w-full rounded-2xl object-cover" />
-            <h3 class="mt-4 font-display text-2xl text-farm-soil">A genuine farm feel</h3>
-            <p class="mt-2 text-sm text-farm-soil/75">The tone is warm, earthy, and personal—designed to feel like a real farm visit, not a polished sales page.</p>
-          </article>
-          <article class="rounded-[28px] bg-white p-6 shadow-soft md:col-span-2">
-            <div class="grid gap-4 md:grid-cols-3">
-              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Visitors</p><p class="mt-2 text-3xl font-semibold">12 max</p></div>
-              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Duration</p><p class="mt-2 text-3xl font-semibold">90 mins</p></div>
-              <div class="rounded-2xl bg-farm-green/8 p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Best for</p><p class="mt-2 text-3xl font-semibold">Families</p></div>
+        <!-- ═══════════════ HERO ═══════════════ -->
+        <section class="relative min-h-screen hero-gradient overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute inset-0 dot-pattern opacity-30"></div>
+            <div class="absolute top-20 right-[10%] w-72 h-72 rounded-full bg-farm-amber/5 blur-3xl"></div>
+            <div class="absolute bottom-20 left-[5%] w-96 h-96 rounded-full bg-farm-sage/5 blur-3xl"></div>
+
+            <div
+                class="relative mx-auto max-w-[1400px] px-6 lg:px-12 pt-32 pb-20 lg:pt-40 lg:pb-28 min-h-screen flex items-center">
+                <div class="grid lg:grid-cols-[1fr,1fr] gap-12 lg:gap-20 items-center w-full">
+                    <!-- Left: Content -->
+                    <div class="space-y-8">
+                        <div class="anim-fade-up">
+                            <span
+                                class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-5 py-2 text-[11px] uppercase tracking-[0.3em] text-white/80 font-medium backdrop-blur-sm">
+                                <span class="w-1.5 h-1.5 rounded-full bg-farm-amber animate-pulse"></span>
+                                Authentic Farm Experiences
+                            </span>
+                        </div>
+
+                        <h1
+                            class="font-serif text-[2.8rem] sm:text-[3.5rem] lg:text-[4.2rem] leading-[1.08] text-white anim-fade-up anim-delay-1">
+                            Walk the fields,<br />
+                            <span class="text-white/60">meet the hens,</span><br />
+                            and taste the earth.
+                        </h1>
+
+                        <p
+                            class="text-base lg:text-lg text-white/50 max-w-lg leading-relaxed font-light anim-fade-up anim-delay-2">
+                            A grounded, personal farm visit crafted for families, food lovers, and curious guests
+                            who want to see where their food truly begins.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 anim-fade-up anim-delay-3">
+                            <button id="openBooking2"
+                                class="group rounded-full bg-white px-8 py-4 text-[13px] font-semibold text-farm-deep tracking-wide hover:bg-farm-cream transition-all duration-300 flex items-center gap-3 hover:gap-4">
+                                Reserve your slot
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </button>
+                            <a href="#experience"
+                                class="rounded-full border border-white/20 px-8 py-4 text-[13px] font-medium text-white/70 hover:text-white hover:border-white/40 transition-all duration-300 tracking-wide">
+                                Explore the visit
+                            </a>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="flex gap-10 pt-6 anim-fade-up anim-delay-4">
+                            <div>
+                                <p class="text-2xl font-bold text-white">12</p>
+                                <p class="text-[11px] text-white/40 mt-1 uppercase tracking-wider font-medium">Max
+                                    guests</p>
+                            </div>
+                            <div class="w-px bg-white/10"></div>
+                            <div>
+                                <p class="text-2xl font-bold text-white">90</p>
+                                <p class="text-[11px] text-white/40 mt-1 uppercase tracking-wider font-medium">Minutes
+                                </p>
+                            </div>
+                            <div class="w-px bg-white/10"></div>
+                            <div>
+                                <p class="text-2xl font-bold text-white">4</p>
+                                <p class="text-[11px] text-white/40 mt-1 uppercase tracking-wider font-medium">Locations
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Image composition -->
+                    <div class="relative anim-fade-up anim-delay-2 hidden lg:block">
+                        <div class="relative">
+                            <!-- Main image -->
+                            <div class="rounded-[2rem] overflow-hidden shadow-2xl">
+                                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1000&q=85"
+                                    alt="Farm landscape" class="w-full h-[520px] object-cover" />
+                            </div>
+                            <!-- Floating card 1 -->
+                            <div
+                                class="absolute -bottom-6 -left-10 glass-card rounded-2xl px-6 py-4 shadow-xl anim-float">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-farm-green/10">
+                                        <svg class="w-5 h-5 text-farm-green" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-[11px] text-farm-soil/50 uppercase tracking-wider font-semibold">
+                                            Next available</p>
+                                        <p class="text-sm font-semibold text-farm-soil mt-0.5">Saturday, Jun 21</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Floating card 2 -->
+                            <div class="absolute -top-4 -right-6 glass-card rounded-2xl px-5 py-3 shadow-xl anim-float"
+                                style="animation-delay: 1.5s;">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex -space-x-1.5">
+                                        <div class="w-6 h-6 rounded-full bg-farm-green/80 border-2 border-white"></div>
+                                        <div class="w-6 h-6 rounded-full bg-farm-amber/80 border-2 border-white"></div>
+                                        <div class="w-6 h-6 rounded-full bg-farm-moss/80 border-2 border-white"></div>
+                                    </div>
+                                    <p class="text-[11px] font-semibold text-farm-soil">8 guests today</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </article>
-        </div>
-      </section>
 
-      <section id="story" class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-        <article class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
-          <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Our story</p>
-          <h2 class="mt-3 font-display text-3xl text-farm-soil">A farm-first brand with roots in clean, ethical food.</h2>
-          <p class="mt-4 text-farm-soil/80">Farm Made Foods is built around practical care, real open spaces, and food you can trust. Our farm visit experience reflects that spirit: calm, transparent, and grounded in everyday farming life.</p>
-          <div class="mt-6 grid gap-4 md:grid-cols-2">
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">Free-range, humane rearing and strict quality standards.</div>
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">Real farm visits with room to ask how and why things are done.</div>
-          </div>
-        </article>
-        <article class="rounded-[30px] overflow-hidden bg-farm-soil text-white shadow-soft">
-          <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80" alt="Farm produce and eggs" class="h-56 w-full object-cover" />
-          <div class="p-6">
-            <h3 class="font-display text-2xl">What to expect on your day</h3>
-            <p class="mt-3 text-white/85 text-sm">A thoughtful walk through the farm, an introduction to our care standards, and a warm welcome to the places behind our eggs and foods.</p>
-          </div>
-        </article>
-      </section>
+            <!-- Bottom wave -->
+            <div class="absolute bottom-0 left-0 right-0 -mb-1">
+                <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                    <path d="M0 40C240 80 480 0 720 40C960 80 1200 0 1440 40V80H0V40Z" fill="#FBF7F0" />
+                </svg>
+            </div>
+        </section>
 
-      <section id="visit-info" class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-        <article class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
-          <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Visit essentials</p>
-          <h2 class="mt-3 font-display text-3xl text-farm-soil">More about the farm visit experience</h2>
-          <p class="mt-4 text-farm-soil/80">Our farm visit is shaped around real, humane, open-air farming. Guests often discover how free-range eggs, fresh produce, and farm standards come together in a calm, transparent setting.</p>
-          <div class="mt-6 grid gap-4 md:grid-cols-2">
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">We focus on welfare-first practices, clean handling, and the everyday life of the farm.</div>
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">The visit is designed for families, food lovers and curious visitors who want a real perspective on ethical farming.</div>
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">You’ll learn why free-range eggs are different from conventional cage-based eggs, from space and sunlight to movement and care.</div>
-            <div class="rounded-2xl bg-farm-clay p-4 text-sm text-farm-soil/85">We also share our approach to quality, safety standards, and the values that shape every product we bring to market.</div>
-          </div>
-        </article>
 
-        <article class="rounded-[30px] bg-farm-soil p-6 text-white shadow-soft lg:p-8">
-          <p class="text-xs uppercase tracking-[0.3em] text-farm-clay">Farm facts</p>
-          <h3 class="mt-3 font-display text-2xl">What makes this farm visit feel real</h3>
-          <ul class="mt-5 space-y-4 text-sm text-white/85">
-            <li>• Open-air living, humane care, and a clear farm-to-table story.</li>
-            <li>• A warm environment where visitors can ask practical questions about farming and food.</li>
-            <li>• Seasonal produce, farm traditions, and a calm pace that feels closer to life on the land.</li>
-            <li>• A simple booking flow with verified visitor details and optional post-visit feedback automation.</li>
-          </ul>
-        </article>
-      </section>
+        <!-- ═══════════════ EXPERIENCE ═══════════════ -->
+        <section id="experience" class="relative py-24 lg:py-32">
+            <div class="mx-auto max-w-[1400px] px-6 lg:px-12">
+                <!-- Section header -->
+                <div class="text-center max-w-2xl mx-auto mb-20">
+                    <span
+                        class="inline-block text-[11px] uppercase tracking-[0.4em] text-farm-green/70 font-semibold mb-4">Why
+                        visitors love it</span>
+                    <h2 class="font-serif text-4xl lg:text-[3.2rem] text-farm-soil leading-tight">
+                        Not a showroom.<br />A real farm.
+                    </h2>
+                    <p class="mt-6 text-farm-soil/45 leading-relaxed text-[15px]">
+                        Walk through open pastures, understand welfare-first farming, and enjoy a calm,
+                        personal visit with real stories from the people behind every product.
+                    </p>
+                </div>
 
-      <section class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
-        <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Frequently asked questions</p>
-        <h2 class="mt-3 font-display text-3xl text-farm-soil">Everything visitors usually ask before coming</h2>
-        <div class="mt-6 space-y-4">
-          <details class="rounded-2xl border border-black/5 bg-farm-clay/60 p-4" open>
-            <summary class="cursor-pointer text-sm font-semibold text-farm-soil">Who is this farm visit suitable for?</summary>
-            <p class="mt-3 text-sm text-farm-soil/80">The visit is ideal for families, food enthusiasts, and anyone curious about ethical farming, free-range eggs, and how farms operate in practice.</p>
-          </details>
-          <details class="rounded-2xl border border-black/5 bg-farm-clay/60 p-4">
-            <summary class="cursor-pointer text-sm font-semibold text-farm-soil">What should I wear or bring?</summary>
-            <p class="mt-3 text-sm text-farm-soil/80">Comfortable footwear and light clothing are best. We recommend carrying water, sun protection, and a camera if you’d like to capture your visit.</p>
-          </details>
-          <details class="rounded-2xl border border-black/5 bg-farm-clay/60 p-4">
-            <summary class="cursor-pointer text-sm font-semibold text-farm-soil">How many people can book at once?</summary>
-            <p class="mt-3 text-sm text-farm-soil/80">Our slots are managed in small groups to keep the visit personal and comfortable. Capacity is displayed during the booking step for each slot.</p>
-          </details>
-          <details class="rounded-2xl border border-black/5 bg-farm-clay/60 p-4">
-            <summary class="cursor-pointer text-sm font-semibold text-farm-soil">Is the booking verified?</summary>
-            <p class="mt-3 text-sm text-farm-soil/80">Yes. We verify the visitor contact using OTP-based validation and collect attendee details for planning and safety records.</p>
-          </details>
-        </div>
-      </section>
+                <!-- Bento grid -->
+                <div class="grid lg:grid-cols-12 gap-5">
+                    <!-- Large card -->
+                    <div
+                        class="lg:col-span-7 rounded-[2rem] bg-white p-8 lg:p-10 card-hover border border-black/[0.03]">
+                        <div class="flex items-start gap-4 mb-8">
+                            <div
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-farm-green/8">
+                                <svg class="w-6 h-6 text-farm-green" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-2xl text-farm-soil">Guided, transparent visits</h3>
+                                <p class="text-sm text-farm-soil/45 mt-2 leading-relaxed">
+                                    Learn about humane farming practices directly from our team in an open, honest
+                                    setting.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="rounded-2xl bg-farm-cream p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Small groups</p>
+                                <p class="text-xs text-farm-soil/45 mt-1.5 leading-relaxed">Keep it intimate, ask
+                                    questions, and experience the farm at a natural pace.</p>
+                            </div>
+                            <div class="rounded-2xl bg-farm-cream p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Fresh produce</p>
+                                <p class="text-xs text-farm-soil/45 mt-1.5 leading-relaxed">Seasonal stories, fresh farm
+                                    produce, and a genuine welcome that feels like home.</p>
+                            </div>
+                        </div>
+                    </div>
 
-      <section id="booking" class="rounded-[30px] border border-black/5 bg-white p-6 shadow-soft lg:p-8">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Visit booking</p>
-            <h2 class="mt-3 font-display text-3xl text-farm-soil">Reserve a visit slot with a simple, guided form.</h2>
-            <p class="mt-3 max-w-2xl text-farm-soil/80">The booking flow below is designed for mobile and desktop, with real-time slot capacity, OTP verification, attendee data capture, and optional follow-up feedback automation.</p>
-          </div>
-          <button id="openBooking3" class="rounded-full bg-farm-green px-5 py-3 text-sm font-semibold text-white shadow-soft hover:bg-farm-moss transition">Open booking form</button>
-        </div>
+                    <!-- Image card -->
+                    <div class="lg:col-span-5 rounded-[2rem] overflow-hidden relative min-h-[320px] card-hover">
+                        <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=85"
+                            alt="Free-range hens" class="absolute inset-0 w-full h-full object-cover" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-farm-deep/80 via-farm-deep/20 to-transparent">
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 p-8">
+                            <span
+                                class="inline-block text-[10px] uppercase tracking-[0.3em] text-white/60 font-semibold mb-2">Featured</span>
+                            <h3 class="font-serif text-2xl text-white">From pasture to plate</h3>
+                            <p class="text-sm text-white/60 mt-2 leading-relaxed">See how free-range eggs move from the
+                                fields to the kitchen with care.</p>
+                        </div>
+                    </div>
 
-        <div class="mt-6 grid gap-4 md:grid-cols-3">
-          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Available slots</p><p class="mt-2 text-xl font-semibold text-farm-soil">Morning / Noon / Evening</p></div>
-          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Capacity</p><p class="mt-2 text-xl font-semibold text-farm-soil">8-12 guests per slot</p></div>
-          <div class="rounded-2xl bg-farm-clay p-4"><p class="text-xs uppercase tracking-[0.3em] text-farm-green">Verification</p><p class="mt-2 text-xl font-semibold text-farm-soil">OTP on your phone</p></div>
-        </div>
-      </section>
+                    <!-- Stats row -->
+                    <div
+                        class="lg:col-span-4 rounded-[2rem] bg-gradient-to-br from-farm-deep to-farm-green p-8 text-white card-hover">
+                        <h3 class="font-serif text-xl mb-6">At a glance</h3>
+                        <div class="space-y-5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-white/50 text-sm">Max guests</span>
+                                <span class="text-2xl font-bold">12</span>
+                            </div>
+                            <div class="h-px bg-white/10"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-white/50 text-sm">Duration</span>
+                                <span class="text-2xl font-bold">90<span
+                                        class="text-sm font-normal text-white/50 ml-1">min</span></span>
+                            </div>
+                            <div class="h-px bg-white/10"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-white/50 text-sm">Locations</span>
+                                <span class="text-2xl font-bold">4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Second image card -->
+                    <div class="lg:col-span-4 rounded-[2rem] overflow-hidden relative min-h-[280px] card-hover">
+                        <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=85"
+                            alt="Garden" class="absolute inset-0 w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-farm-deep/70 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6">
+                            <h3 class="font-serif text-xl text-white">A genuine farm feel</h3>
+                            <p class="text-xs text-white/60 mt-1.5 leading-relaxed">Warm, earthy, and personal.</p>
+                        </div>
+                    </div>
+
+                    <!-- CTA card -->
+                    <div
+                        class="lg:col-span-4 rounded-[2rem] bg-farm-cream border border-black/[0.03] p-8 flex flex-col justify-between card-hover">
+                        <div>
+                            <span
+                                class="inline-block text-[10px] uppercase tracking-[0.3em] text-farm-green/60 font-semibold mb-3">Ready?</span>
+                            <h3 class="font-serif text-2xl text-farm-soil">Book your visit today</h3>
+                            <p class="text-sm text-farm-soil/45 mt-3 leading-relaxed">Simple booking, verified details,
+                                real farm experience.</p>
+                        </div>
+                        <button id="openBooking3"
+                            class="mt-6 rounded-full bg-farm-green px-6 py-3 text-[13px] font-semibold text-white tracking-wide hover:bg-farm-deep transition-all duration-300 self-start">
+                            Open booking form
+                        </button>
+                    </div>
+
+                    <!-- Feature card -->
+                    <div class="lg:col-span-4 rounded-[2rem] bg-white border border-black/[0.03] p-8 card-hover">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-farm-amber/10 mb-5">
+                            <svg class="w-6 h-6 text-farm-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-xl text-farm-soil">Farm stories</h3>
+                        <p class="text-sm text-farm-soil/45 mt-3 leading-relaxed">Hear the real stories behind every egg
+                            and product, from the people who grow them.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider mx-auto max-w-[1200px]"></div>
+
+        <!-- ═══════════════ GALLERY ═══════════════ -->
+        <section id="gallery" class="py-24 lg:py-32">
+            <div class="mx-auto max-w-[1400px] px-6 lg:px-12">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <span
+                        class="inline-block text-[11px] uppercase tracking-[0.4em] text-farm-green/70 font-semibold mb-4">Our
+                        Farms</span>
+                    <h2 class="font-serif text-4xl lg:text-[3.2rem] text-farm-soil leading-tight">
+                        Glimpse the land.
+                    </h2>
+                    <p class="mt-6 text-farm-soil/45 leading-relaxed text-[15px]">
+                        Open pastures, barns, and gardens that make our farm visits feel real.
+                    </p>
+                </div>
+
+                <!-- Masonry Gallery -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-5 auto-rows-[180px] lg:auto-rows-[220px]">
+                    <div class="gallery-item col-span-2 row-span-2">
+                        <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=85"
+                            alt="Farm landscape" />
+                        <div class="overlay">
+                            <span
+                                class="text-[10px] uppercase tracking-[0.3em] text-white/50 font-semibold">Location</span>
+                            <p class="text-white font-serif text-xl mt-1">Greenfield Farm</p>
+                            <p class="text-white/60 text-xs mt-1">Greenfield, Pune</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=85"
+                            alt="Hens" />
+                        <div class="overlay">
+                            <p class="text-white font-serif text-lg">Free-range hens</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=85"
+                            alt="Produce" />
+                        <div class="overlay">
+                            <p class="text-white font-serif text-lg">Fresh produce</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=600&q=85"
+                            alt="Barn" />
+                        <div class="overlay">
+                            <p class="text-white font-serif text-lg">The Barn</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item col-span-2">
+                        <img src="https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=1200&q=85"
+                            alt="Fields" />
+                        <div class="overlay">
+                            <span
+                                class="text-[10px] uppercase tracking-[0.3em] text-white/50 font-semibold">Location</span>
+                            <p class="text-white font-serif text-xl mt-1">Sunnyvale Ranch</p>
+                            <p class="text-white/60 text-xs mt-1">Sunnyvale, Mumbai</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=85"
+                            alt="Garden" />
+                        <div class="overlay">
+                            <p class="text-white font-serif text-lg">Garden</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=85"
+                            alt="Sunset" />
+                        <div class="overlay">
+                            <p class="text-white font-serif text-lg">Golden hour</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider mx-auto max-w-[1200px]"></div>
+
+        <!-- ═══════════════ STORY ═══════════════ -->
+        <section id="story" class="py-24 lg:py-32">
+            <div class="mx-auto max-w-[1400px] px-6 lg:px-12">
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                    <!-- Text -->
+                    <div>
+                        <span
+                            class="inline-block text-[11px] uppercase tracking-[0.4em] text-farm-green/70 font-semibold mb-4">Our
+                            Story</span>
+                        <h2 class="font-serif text-4xl lg:text-[3rem] text-farm-soil leading-tight">
+                            A farm-first brand<br />with roots in clean,<br />ethical food.
+                        </h2>
+                        <p class="mt-8 text-farm-soil/50 leading-[1.8] text-[15px]">
+                            Farm Made Foods is built around practical care, real open spaces, and food you can trust.
+                            Our farm visit experience reflects that spirit: calm, transparent, and grounded in
+                            everyday farming life.
+                        </p>
+                        <div class="mt-10 grid sm:grid-cols-2 gap-5">
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-farm-green/8 mb-4">
+                                    <svg class="w-5 h-5 text-farm-green" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </div>
+                                <p class="font-semibold text-farm-soil text-sm">Free-range, humane rearing</p>
+                                <p class="text-xs text-farm-soil/45 mt-2 leading-relaxed">Strict quality standards from
+                                    field to table.</p>
+                            </div>
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-farm-green/8 mb-4">
+                                    <svg class="w-5 h-5 text-farm-green" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <p class="font-semibold text-farm-soil text-sm">Real farm visits</p>
+                                <p class="text-xs text-farm-soil/45 mt-2 leading-relaxed">Room to ask how and why things
+                                    are done.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image stack -->
+                    <div class="relative">
+                        <div class="rounded-[2rem] overflow-hidden shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=85"
+                                alt="Farm produce" class="w-full h-[450px] object-cover" />
+                        </div>
+                        <div
+                            class="absolute -bottom-8 -left-8 rounded-2xl bg-white p-6 shadow-xl max-w-[260px] border border-black/[0.03]">
+                            <p class="font-serif text-lg text-farm-soil">What to expect</p>
+                            <p class="text-xs text-farm-soil/45 mt-2 leading-relaxed">A thoughtful walk through the farm
+                                and a warm welcome to the places behind our eggs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider mx-auto max-w-[1200px]"></div>
+
+        <!-- ═══════════════ VISIT INFO ═══════════════ -->
+        <section id="visit-info" class="py-24 lg:py-32">
+            <div class="mx-auto max-w-[1400px] px-6 lg:px-12">
+                <div class="grid lg:grid-cols-[1fr,0.8fr] gap-12 lg:gap-16">
+                    <!-- Left -->
+                    <div>
+                        <span
+                            class="inline-block text-[11px] uppercase tracking-[0.4em] text-farm-green/70 font-semibold mb-4">Visit
+                            Essentials</span>
+                        <h2 class="font-serif text-4xl lg:text-[3rem] text-farm-soil leading-tight">
+                            More about the<br />farm visit experience.
+                        </h2>
+                        <p class="mt-6 text-farm-soil/50 leading-[1.8] text-[15px]">
+                            Our farm visit is shaped around real, humane, open-air farming. Guests discover how
+                            free-range eggs, fresh produce, and farm standards come together in a calm, transparent
+                            setting.
+                        </p>
+                        <div class="mt-10 grid sm:grid-cols-2 gap-5">
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <p class="text-sm text-farm-soil/60 leading-relaxed">Welfare-first practices, clean
+                                    handling, and the everyday life of the farm.</p>
+                            </div>
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <p class="text-sm text-farm-soil/60 leading-relaxed">Designed for families, food lovers,
+                                    and curious visitors seeking real perspectives.</p>
+                            </div>
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <p class="text-sm text-farm-soil/60 leading-relaxed">Learn why free-range eggs are
+                                    different, from space and sunlight to movement and care.</p>
+                            </div>
+                            <div class="rounded-2xl bg-farm-cream p-6 border border-black/[0.03]">
+                                <p class="text-sm text-farm-soil/60 leading-relaxed">Our approach to quality, safety
+                                    standards, and the values behind every product.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right -->
+                    <div
+                        class="rounded-[2rem] bg-gradient-to-br from-farm-deep via-[#1f4230] to-farm-green p-10 text-white">
+                        <span
+                            class="inline-block text-[10px] uppercase tracking-[0.3em] text-white/40 font-semibold mb-3">Farm
+                            Facts</span>
+                        <h3 class="font-serif text-2xl">What makes this visit feel real</h3>
+                        <div class="mt-8 space-y-5">
+                            <div class="flex gap-4 items-start">
+                                <div
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 mt-0.5">
+                                    <svg class="w-3.5 h-3.5 text-farm-amber" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-white/60 leading-relaxed">Open-air living, humane care, and a
+                                    clear farm-to-table story.</p>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 mt-0.5">
+                                    <svg class="w-3.5 h-3.5 text-farm-amber" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-white/60 leading-relaxed">A warm environment where visitors can
+                                    ask practical questions about farming.</p>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 mt-0.5">
+                                    <svg class="w-3.5 h-3.5 text-farm-amber" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-white/60 leading-relaxed">Seasonal produce, farm traditions, and
+                                    a calm pace closer to life on the land.</p>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 mt-0.5">
+                                    <svg class="w-3.5 h-3.5 text-farm-amber" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-white/60 leading-relaxed">A simple booking flow with verified
+                                    visitor details.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider mx-auto max-w-[1200px]"></div>
+
+        <!-- ═══════════════ FAQ ═══════════════ -->
+        <section id="faq" class="py-24 lg:py-32">
+            <div class="mx-auto max-w-[800px] px-6 lg:px-12">
+                <div class="text-center mb-16">
+                    <span
+                        class="inline-block text-[11px] uppercase tracking-[0.4em] text-farm-green/70 font-semibold mb-4">Frequently
+                        Asked</span>
+                    <h2 class="font-serif text-4xl lg:text-[3rem] text-farm-soil">Before you visit</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <details class="group rounded-2xl bg-white border border-black/[0.03] overflow-hidden" open>
+                        <summary
+                            class="cursor-pointer px-7 py-5 text-sm font-semibold text-farm-soil flex items-center justify-between hover:bg-farm-cream/50 transition-colors">
+                            Who is this farm visit suitable for?
+                            <span
+                                class="flex h-7 w-7 items-center justify-center rounded-full bg-farm-cream text-farm-green text-xs font-bold group-open:rotate-45 transition-transform duration-300">+</span>
+                        </summary>
+                        <div class="px-7 pb-5">
+                            <p class="text-sm text-farm-soil/50 leading-relaxed">The visit is ideal for families, food
+                                enthusiasts, and anyone curious about ethical farming, free-range eggs, and how farms
+                                operate in practice.</p>
+                        </div>
+                    </details>
+                    <details class="group rounded-2xl bg-white border border-black/[0.03] overflow-hidden">
+                        <summary
+                            class="cursor-pointer px-7 py-5 text-sm font-semibold text-farm-soil flex items-center justify-between hover:bg-farm-cream/50 transition-colors">
+                            What should I wear or bring?
+                            <span
+                                class="flex h-7 w-7 items-center justify-center rounded-full bg-farm-cream text-farm-green text-xs font-bold group-open:rotate-45 transition-transform duration-300">+</span>
+                        </summary>
+                        <div class="px-7 pb-5">
+                            <p class="text-sm text-farm-soil/50 leading-relaxed">Comfortable footwear and light clothing
+                                are best. We recommend carrying water, sun protection, and a camera if you'd like to
+                                capture your visit.</p>
+                        </div>
+                    </details>
+                    <details class="group rounded-2xl bg-white border border-black/[0.03] overflow-hidden">
+                        <summary
+                            class="cursor-pointer px-7 py-5 text-sm font-semibold text-farm-soil flex items-center justify-between hover:bg-farm-cream/50 transition-colors">
+                            How many people can book at once?
+                            <span
+                                class="flex h-7 w-7 items-center justify-center rounded-full bg-farm-cream text-farm-green text-xs font-bold group-open:rotate-45 transition-transform duration-300">+</span>
+                        </summary>
+                        <div class="px-7 pb-5">
+                            <p class="text-sm text-farm-soil/50 leading-relaxed">Our bookings are managed in small
+                                groups to keep the visit personal and comfortable. You can specify the number of
+                                attendees during booking.</p>
+                        </div>
+                    </details>
+                    <details class="group rounded-2xl bg-white border border-black/[0.03] overflow-hidden">
+                        <summary
+                            class="cursor-pointer px-7 py-5 text-sm font-semibold text-farm-soil flex items-center justify-between hover:bg-farm-cream/50 transition-colors">
+                            Is the booking verified?
+                            <span
+                                class="flex h-7 w-7 items-center justify-center rounded-full bg-farm-cream text-farm-green text-xs font-bold group-open:rotate-45 transition-transform duration-300">+</span>
+                        </summary>
+                        <div class="px-7 pb-5">
+                            <p class="text-sm text-farm-soil/50 leading-relaxed">Yes. We verify the visitor contact
+                                using OTP-based validation and collect attendee details for planning and safety records.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════ CTA ═══════════════ -->
+        <section class="py-24 lg:py-32">
+            <div class="mx-auto max-w-[1400px] px-6 lg:px-12">
+                <div class="relative rounded-[2.5rem] hero-gradient overflow-hidden p-12 lg:p-20 text-center">
+                    <div class="absolute inset-0 dot-pattern opacity-20"></div>
+                    <div class="relative">
+                        <span
+                            class="inline-block text-[11px] uppercase tracking-[0.4em] text-white/40 font-semibold mb-4">Ready
+                            to visit?</span>
+                        <h2 class="font-serif text-4xl lg:text-[3rem] text-white leading-tight max-w-xl mx-auto">
+                            Your farm visit<br />starts here.
+                        </h2>
+                        <p class="mt-6 text-white/45 text-[15px] max-w-md mx-auto leading-relaxed">
+                            OTP verification, attendee capture, and date selection&mdash;all in one smooth flow.
+                        </p>
+                        <button
+                            class="mt-10 rounded-full bg-white px-10 py-4 text-[13px] font-semibold text-farm-deep tracking-wide hover:bg-farm-cream transition-all duration-300 hover:shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)]">
+                            Open booking form
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="border-t border-black/5 bg-white/80 py-6 text-center text-sm text-farm-soil/70">© 2026 Farm Made Foods. Farm visits crafted with care.</footer>
-
-    <div id="bookingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 p-4">
-      <div class="w-full max-w-4xl rounded-[32px] bg-white shadow-2xl ring-1 ring-black/5">
-        <div class="flex items-start justify-between border-b border-black/5 p-5 lg:p-6">
-          <div>
-            <p class="text-xs uppercase tracking-[0.28em] text-farm-green">Farm visit booking</p>
-            <h3 class="mt-2 font-display text-2xl text-farm-soil">Book your authentic farm visit</h3>
-            <p class="mt-1 text-sm text-farm-soil/70">A responsive step-by-step flow with live slot capacity and OTP validation.</p>
-          </div>
-          <button id="closeModal" class="rounded-full border border-black/10 p-2 text-farm-soil/70 hover:bg-black/5">✕</button>
+    <!-- Footer -->
+    <footer class="border-t border-black/[0.05] bg-white/40 py-10">
+        <div class="mx-auto max-w-[1400px] px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+                <span
+                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-farm-green text-white text-[10px] font-bold tracking-wider">FM</span>
+                <span class="font-serif text-sm text-farm-soil">Farm Made Foods</span>
+            </div>
+            <p class="text-[12px] text-farm-soil/35">&copy; 2026 Farm Made Foods. Crafted with care.</p>
         </div>
+    </footer>
 
-        <div class="grid gap-0 lg:grid-cols-[0.9fr,1.1fr]">
-          <aside class="border-b border-black/5 bg-farm-clay/60 p-5 lg:border-b-0 lg:border-r lg:p-6">
-            <p class="text-xs uppercase tracking-[0.3em] text-farm-green">Booking summary</p>
-            <div class="mt-4 space-y-3 text-sm text-farm-soil/80">
-              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Today’s available slots</strong><br />Morning • Noon • Evening</div>
-              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Capacity</strong><br /><span id="capacityLabel">8 seats left</span> in the selected slot.</div>
-              <div class="rounded-2xl bg-white p-4 shadow-soft"><strong>Verification</strong><br />OTP will be sent to the phone number you provide.</div>
-            </div>
-            <div class="mt-6 rounded-2xl bg-farm-soil p-4 text-white shadow-soft">
-              <p class="text-xs uppercase tracking-[0.3em] text-farm-clay">Optional automation</p>
-              <p class="mt-2 text-sm text-white/85">We can save a short post-visit feedback note to your booking record for follow-up.</p>
-            </div>
-          </aside>
 
-          <div class="p-5 lg:p-6">
-            <div class="mb-5 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-farm-green">
-              <span id="stepBadge" class="rounded-full bg-farm-green/8 px-3 py-1">Step 1 of 4</span>
-              <span id="stepTitle" class="text-farm-soil/80">Choose your slot</span>
-            </div>
+    <!-- ═══════════════ BOOKING MODAL ═══════════════ -->
+    <div id="bookingModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-3 sm:p-5 backdrop-blur-md">
+        <div
+            class="w-full max-w-[980px] max-h-[94vh] overflow-hidden rounded-[1.5rem] bg-white shadow-2xl flex flex-col anim-scale-in">
 
-            <form id="bookingForm" class="space-y-5">
-              <section data-step="1" class="step space-y-5">
-                <div class="grid gap-4 md:grid-cols-2">
-                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                    <span class="text-sm font-semibold text-farm-soil">Preferred date</span>
-                    <input id="visitDate" type="date" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none ring-0 focus:border-farm-green" />
-                  </label>
-                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                    <span class="text-sm font-semibold text-farm-soil">Number of attendees</span>
-                    <input id="attendeeCount" type="number" min="1" max="12" value="2" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
-                  </label>
-                </div>
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-7 py-5 border-b border-black/[0.04] shrink-0">
                 <div>
-                  <p class="text-sm font-semibold text-farm-soil">Select a slot</p>
-                  <div id="slotButtons" class="mt-3 grid gap-3 md:grid-cols-3"></div>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-farm-green/70 font-semibold">Farm Visit
+                        Booking</p>
+                    <h3 class="mt-1 font-serif text-xl text-farm-soil">Book your authentic farm visit</h3>
                 </div>
-              </section>
+                <button id="closeModal"
+                    class="flex h-9 w-9 items-center justify-center rounded-full border border-black/[0.06] text-farm-soil/40 hover:bg-farm-cream hover:text-farm-soil transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-              <section data-step="2" class="step hidden space-y-4">
-                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                  <p class="text-sm font-semibold text-farm-soil">Visitor details</p>
-                  <p class="text-xs text-farm-soil/60">Add one entry for each attendee. Aadhaar is collected for verification only.</p>
-                </div>
-                <div id="attendeeFields" class="space-y-4"></div>
-              </section>
+            <!-- Modal Body -->
+            <div class="modal-body flex flex-1 overflow-hidden">
 
-              <section data-step="3" class="step hidden space-y-5">
-                <div class="grid gap-4 md:grid-cols-2">
-                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                    <span class="text-sm font-semibold text-farm-soil">Full name</span>
-                    <input id="leadName" type="text" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
-                  </label>
-                  <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                    <span class="text-sm font-semibold text-farm-soil">Phone number</span>
-                    <input id="phone" type="tel" required class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="10-digit number" />
-                  </label>
-                </div>
-                <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                  <span class="text-sm font-semibold text-farm-soil">Email address</span>
-                  <input id="email" type="email" class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" />
-                </label>
-                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                  <div class="flex flex-wrap items-center gap-3">
-                    <button id="sendOtp" type="button" class="rounded-full bg-farm-green px-4 py-2 text-sm font-semibold text-white hover:bg-farm-moss transition">Send OTP</button>
-                    <span id="otpStatus" class="text-sm text-farm-soil/70">OTP will be sent to your mobile number.</span>
-                  </div>
-                  <div class="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
-                    <input id="otpInput" type="text" inputmode="numeric" maxlength="6" class="w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="Enter 6-digit OTP" />
-                    <button id="verifyOtp" type="button" class="rounded-full bg-farm-soil px-4 py-2 text-sm font-semibold text-white hover:bg-black transition">Verify</button>
-                  </div>
-                  <p id="otpResult" class="mt-3 text-sm text-farm-green"></p>
-                </div>
-              </section>
+                <!-- DESKTOP SIDEBAR -->
+                <aside
+                    class="desktop-sidebar w-[260px] shrink-0 flex-col border-r border-black/[0.04] bg-gradient-to-b from-farm-cream to-white">
+                    <div class="flex-1 p-6">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-farm-green/50 mb-6">Progress</p>
+                        <div class="space-y-0">
+                            <!-- Step 1 -->
+                            <div class="flex items-start gap-3.5">
+                                <div class="flex flex-col items-center">
+                                    <span id="sb-num-1"
+                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-green text-white text-xs font-bold transition-all duration-300">1</span>
+                                    <div id="sb-line-1"
+                                        class="w-[2px] h-5 rounded-full bg-farm-green/30 mt-1.5 transition-colors duration-300">
+                                    </div>
+                                </div>
+                                <div class="pt-[3px] min-w-0">
+                                    <p id="sb-label-1"
+                                        class="text-[13px] font-semibold text-farm-soil leading-tight transition-colors duration-300">
+                                        OTP Verification</p>
+                                    <p id="sb-desc-1"
+                                        class="text-[11px] text-farm-soil/40 mt-0.5 leading-tight transition-colors duration-300">
+                                        Verify your phone</p>
+                                </div>
+                            </div>
+                            <!-- Step 2 -->
+                            <div class="flex items-start gap-3.5">
+                                <div class="flex flex-col items-center">
+                                    <span id="sb-num-2"
+                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-cream text-farm-soil/30 text-xs font-bold transition-all duration-300">2</span>
+                                    <div id="sb-line-2"
+                                        class="w-[2px] h-5 rounded-full bg-farm-clay mt-1.5 transition-colors duration-300">
+                                    </div>
+                                </div>
+                                <div class="pt-[3px] min-w-0">
+                                    <p id="sb-label-2"
+                                        class="text-[13px] font-semibold text-farm-soil/35 leading-tight transition-colors duration-300">
+                                        Your Details</p>
+                                    <p id="sb-desc-2"
+                                        class="text-[11px] text-farm-soil/25 mt-0.5 leading-tight transition-colors duration-300">
+                                        Name & contact</p>
+                                </div>
+                            </div>
+                            <!-- Step 3 -->
+                            <div class="flex items-start gap-3.5">
+                                <div class="flex flex-col items-center">
+                                    <span id="sb-num-3"
+                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-cream text-farm-soil/30 text-xs font-bold transition-all duration-300">3</span>
+                                    <div id="sb-line-3"
+                                        class="w-[2px] h-5 rounded-full bg-farm-clay mt-1.5 transition-colors duration-300">
+                                    </div>
+                                </div>
+                                <div class="pt-[3px] min-w-0">
+                                    <p id="sb-label-3"
+                                        class="text-[13px] font-semibold text-farm-soil/35 leading-tight transition-colors duration-300">
+                                        Choose Place</p>
+                                    <p id="sb-desc-3"
+                                        class="text-[11px] text-farm-soil/25 mt-0.5 leading-tight transition-colors duration-300">
+                                        Select location</p>
+                                </div>
+                            </div>
+                            <!-- Step 4 -->
+                            <div class="flex items-start gap-3.5">
+                                <div class="flex flex-col items-center">
+                                    <span id="sb-num-4"
+                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-cream text-farm-soil/30 text-xs font-bold transition-all duration-300">4</span>
+                                </div>
+                                <div class="pt-[3px] min-w-0">
+                                    <p id="sb-label-4"
+                                        class="text-[13px] font-semibold text-farm-soil/35 leading-tight transition-colors duration-300">
+                                        Pick Date</p>
+                                    <p id="sb-desc-4"
+                                        class="text-[11px] text-farm-soil/25 mt-0.5 leading-tight transition-colors duration-300">
+                                        Select visit date</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Summary -->
+                    <div class="p-6 pt-0">
+                        <div class="rounded-xl bg-white border border-black/[0.04] p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-farm-green/50 mb-3">Summary
+                            </p>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between"><span
+                                        class="text-[11px] text-farm-soil/35">Status</span><span id="summaryStatus"
+                                        class="text-[11px] font-semibold text-farm-soil">OTP pending</span></div>
+                                <div class="flex items-center justify-between"><span
+                                        class="text-[11px] text-farm-soil/35">Date</span><span id="summaryDate"
+                                        class="text-[11px] font-semibold text-farm-soil">Not selected</span></div>
+                                <div class="flex items-center justify-between"><span
+                                        class="text-[11px] text-farm-soil/35">Place</span><span id="summaryPlace"
+                                        class="text-[11px] font-semibold text-farm-soil">Not selected</span></div>
+                                <div class="flex items-center justify-between"><span
+                                        class="text-[11px] text-farm-soil/35">Guests</span><span id="summaryGuests"
+                                        class="text-[11px] font-semibold text-farm-soil">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
 
-              <section data-step="4" class="step hidden space-y-5">
-                <div class="rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                  <p class="text-sm font-semibold text-farm-soil">Confirmation & feedback</p>
-                  <p class="text-xs text-farm-soil/60">Add an optional note for post-visit follow-up automation.</p>
-                </div>
-                <label class="block rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-                  <span class="text-sm font-semibold text-farm-soil">Optional post-visit feedback message</span>
-                  <textarea id="feedbackMessage" rows="4" class="mt-2 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green" placeholder="We can auto-generate a warm thank-you note after the visit."></textarea>
-                </label>
-                <div id="reviewBox" class="rounded-2xl border border-black/5 bg-farm-clay/50 p-4 text-sm text-farm-soil/85 shadow-soft"></div>
-              </section>
+                <!-- FORM CONTENT -->
+                <div class="flex-1 overflow-y-auto">
+                    <!-- Mobile Stepper -->
+                    <div
+                        class="mobile-stepper items-center gap-2 px-5 py-3 border-b border-black/[0.04] bg-farm-cream/50 overflow-x-auto hide-scrollbar">
+                        <div id="mob-step-1"
+                            class="mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-green text-white transition-all duration-200">
+                            1 OTP</div>
+                        <div class="w-2 h-0.5 rounded-full bg-farm-clay shrink-0"></div>
+                        <div id="mob-step-2"
+                            class="mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-cream text-farm-soil/30 transition-all duration-200">
+                            2 Details</div>
+                        <div class="w-2 h-0.5 rounded-full bg-farm-clay shrink-0"></div>
+                        <div id="mob-step-3"
+                            class="mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-cream text-farm-soil/30 transition-all duration-200">
+                            3 Place</div>
+                        <div class="w-2 h-0.5 rounded-full bg-farm-clay shrink-0"></div>
+                        <div id="mob-step-4"
+                            class="mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-cream text-farm-soil/30 transition-all duration-200">
+                            4 Date</div>
+                    </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <button id="prevBtn" type="button" class="rounded-full border border-black/10 px-4 py-2 text-sm font-semibold text-farm-soil hover:bg-black/5 transition">Back</button>
-                <div class="flex items-center gap-3">
-                  <button id="nextBtn" type="button" class="rounded-full bg-farm-green px-5 py-2.5 text-sm font-semibold text-white hover:bg-farm-moss transition">Next step</button>
-                  <button id="submitBtn" type="submit" class="hidden rounded-full bg-farm-soil px-5 py-2.5 text-sm font-semibold text-white hover:bg-black transition">Confirm booking</button>
+                    <div class="px-7 pt-5 pb-1">
+                        <div class="flex items-center gap-2.5 text-[11px] uppercase tracking-[0.2em]">
+                            <span id="stepBadge"
+                                class="rounded-full bg-farm-green/8 text-farm-green px-3 py-1 font-semibold">Step 1 of
+                                4</span>
+                            <span id="stepTitle" class="text-farm-soil/40 font-medium">OTP Verification</span>
+                        </div>
+                    </div>
+
+                    <form id="bookingForm" class="px-7 pb-7 pt-3 space-y-5">
+                        <!-- Step 1: OTP -->
+                        <section data-step="1" class="step space-y-4">
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Phone Verification</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Enter your 10-digit phone number to
+                                    receive an OTP.</p>
+                                <div class="grid gap-3 sm:grid-cols-[1fr,auto]">
+                                    <input id="phone" type="tel" required placeholder="10-digit number"
+                                        class="w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition" />
+                                    <button id="sendOtp" type="button"
+                                        class="rounded-lg bg-farm-green px-6 py-3 text-sm font-semibold text-white hover:bg-farm-deep transition-all duration-200 whitespace-nowrap">Send
+                                        OTP</button>
+                                </div>
+                                <div id="otpStatus" class="mt-3 text-xs text-farm-soil/40">Enter your phone number and
+                                    click Send OTP.</div>
+                            </div>
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Enter OTP</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Enter the 6-digit code sent to your
+                                    phone.</p>
+                                <div class="grid gap-3 sm:grid-cols-[1fr,auto]">
+                                    <input id="otpInput" type="text" inputmode="numeric" maxlength="6"
+                                        placeholder="000000"
+                                        class="w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition tracking-[0.35em] text-center font-mono text-lg" />
+                                    <button id="verifyOtp" type="button"
+                                        class="rounded-lg bg-farm-soil px-6 py-3 text-sm font-semibold text-white hover:bg-black transition-all duration-200">Verify</button>
+                                </div>
+                                <p id="otpResult" class="mt-3 text-xs"></p>
+                            </div>
+                        </section>
+
+                        <!-- Step 2: Details -->
+                        <section data-step="2" class="step hidden space-y-4">
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Your Details</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Fill in your contact information.</p>
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <label class="block">
+                                        <span
+                                            class="text-[11px] font-semibold text-farm-soil/50 uppercase tracking-wider">Full
+                                            name</span>
+                                        <input id="leadName" type="text" required
+                                            class="mt-2 w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition" />
+                                    </label>
+                                    <label class="block">
+                                        <span
+                                            class="text-[11px] font-semibold text-farm-soil/50 uppercase tracking-wider">Email
+                                            address</span>
+                                        <input id="email" type="email"
+                                            class="mt-2 w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Attendee Information</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Add details for each attendee.</p>
+                                <label class="block mb-4">
+                                    <span
+                                        class="text-[11px] font-semibold text-farm-soil/50 uppercase tracking-wider">Number
+                                        of attendees</span>
+                                    <input id="attendeeCount" type="number" min="1" max="12" value="2" required
+                                        class="mt-2 w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition" />
+                                </label>
+                                <div id="attendeeFields" class="space-y-3"></div>
+                            </div>
+                        </section>
+
+                        <!-- Step 3: Choose Place -->
+                        <section data-step="3" class="step hidden space-y-4">
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Select Farm Location</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Choose the farm you'd like to visit.</p>
+                                <div id="placeButtons" class="grid gap-3 sm:grid-cols-2"></div>
+                                <div id="placeGallery" class="mt-5 hidden">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-farm-green/50 mb-3">
+                                        Farm Gallery</p>
+                                    <div id="placeGalleryTrack"
+                                        class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 hide-scrollbar">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Step 4: Pick Date -->
+                        <section data-step="4" class="step hidden space-y-4">
+                            <div class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-5">
+                                <p class="text-sm font-semibold text-farm-soil">Select Visit Date</p>
+                                <p class="text-xs text-farm-soil/40 mt-1 mb-4">Pick your preferred date.</p>
+                                <label class="block">
+                                    <span
+                                        class="text-[11px] font-semibold text-farm-soil/50 uppercase tracking-wider">Preferred
+                                        date</span>
+                                    <input id="visitDate" type="date" required
+                                        class="mt-2 w-full rounded-lg border border-black/[0.06] bg-white px-4 py-3 text-sm outline-none focus:border-farm-green focus:ring-2 focus:ring-farm-green/10 transition" />
+                                </label>
+                            </div>
+                            <div id="reviewBox"
+                                class="rounded-xl border border-black/[0.04] bg-farm-cream/50 p-5 text-sm text-farm-soil/60">
+                            </div>
+                        </section>
+
+                        <!-- Navigation -->
+                        <div class="flex items-center justify-between gap-3 pt-2">
+                            <button id="prevBtn" type="button"
+                                class="rounded-lg border border-black/[0.08] px-5 py-2.5 text-sm font-semibold text-farm-soil/60 hover:bg-farm-cream transition hidden">Back</button>
+                            <div class="flex items-center gap-3 ml-auto">
+                                <button id="nextBtn" type="button"
+                                    class="rounded-lg bg-farm-green px-6 py-2.5 text-sm font-semibold text-white hover:bg-farm-deep transition-all duration-200">Next
+                                    step</button>
+                                <button id="submitBtn" type="submit"
+                                    class="hidden rounded-lg bg-farm-soil px-6 py-2.5 text-sm font-semibold text-white hover:bg-black transition-all duration-200">Confirm
+                                    booking</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-              </div>
-            </form>
-          </div>
+            </div>
         </div>
-      </div>
     </div>
 
+
+    <!-- ═══════════════ CONFIRMATION MODAL ═══════════════ -->
+    <div id="confirmationModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4 backdrop-blur-md">
+        <div
+            class="w-full max-w-lg max-h-[90vh] overflow-hidden rounded-[1.5rem] bg-white shadow-2xl flex flex-col anim-scale-in">
+            <div class="flex items-center justify-between px-7 py-5 border-b border-black/[0.04] shrink-0">
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-farm-green/70 font-semibold">Booking Confirmed
+                    </p>
+                    <h3 class="mt-1 font-serif text-xl text-farm-soil">Your farm visit is booked!</h3>
+                </div>
+                <button id="closeConfirmation"
+                    class="flex h-9 w-9 items-center justify-center rounded-full border border-black/[0.06] text-farm-soil/40 hover:bg-farm-cream transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-7">
+                <div id="receipt" class="rounded-xl border border-black/[0.04] bg-farm-cream/40 p-6">
+                    <div class="text-center mb-6">
+                        <span
+                            class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-farm-green text-white text-xs font-bold tracking-wider">FM</span>
+                        <h4 class="mt-3 font-serif text-lg text-farm-soil">Farm Made Foods</h4>
+                        <p class="text-[10px] text-farm-soil/40 uppercase tracking-[0.25em] font-semibold mt-1">Booking
+                            Receipt</p>
+                    </div>
+                    <div class="border-t border-b border-black/[0.06] py-3 mb-4">
+                        <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Booking
+                            Reference</p>
+                        <p id="receiptRef" class="text-base font-bold text-farm-green mt-1"></p>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2 mb-4">
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Visitor</p>
+                            <p id="receiptName" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Phone</p>
+                            <p id="receiptPhone" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Email</p>
+                            <p id="receiptEmail" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Visit Date
+                            </p>
+                            <p id="receiptDate" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Location</p>
+                            <p id="receiptPlace" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold">Guests</p>
+                            <p id="receiptGuests" class="text-sm font-semibold text-farm-soil mt-1"></p>
+                        </div>
+                    </div>
+                    <div class="border-t border-black/[0.06] pt-4">
+                        <p class="text-[10px] text-farm-soil/40 uppercase tracking-wider font-semibold mb-2">Attendees
+                        </p>
+                        <div id="receiptAttendees" class="space-y-2"></div>
+                    </div>
+                    <div class="mt-4 rounded-xl bg-farm-green/8 p-3 text-center">
+                        <p class="text-xs text-farm-green font-semibold">Thank you for booking with Farm Made Foods!</p>
+                    </div>
+                </div>
+                <button id="downloadPdf" type="button"
+                    class="mt-4 w-full rounded-lg bg-farm-green px-6 py-3 text-sm font-semibold text-white hover:bg-farm-deep transition-all duration-200">Download
+                    Receipt as PDF</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ═══════════════ JAVASCRIPT ═══════════════ -->
     <script>
-      const slots = [
-        { id: 'morning', label: 'Morning', time: '8:30 AM – 10:30 AM', capacity: 8 },
-        { id: 'noon', label: 'Noon', time: '12:00 PM – 2:00 PM', capacity: 10 },
-        { id: 'evening', label: 'Evening', time: '4:00 PM – 6:00 PM', capacity: 7 }
-      ];
+        // Liquid Glass Navbar scroll effect
+        const header = document.getElementById('siteHeader');
+        const navPill = document.getElementById('navPill');
+        let lastScroll = 0;
 
-      const slotButtons = document.getElementById('slotButtons');
-      const attendeeCountInput = document.getElementById('attendeeCount');
-      const attendeeFields = document.getElementById('attendeeFields');
-      const capacityLabel = document.getElementById('capacityLabel');
-      const reviewBox = document.getElementById('reviewBox');
-      const stepBadge = document.getElementById('stepBadge');
-      const stepTitle = document.getElementById('stepTitle');
-      const steps = Array.from(document.querySelectorAll('.step'));
-      let currentStep = 1;
-      let selectedSlot = slots[0].id;
-      let otpVerified = false;
-      let generatedOtp = '';
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
 
-      function renderSlots() {
-        slotButtons.innerHTML = '';
-        slots.forEach(slot => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = `rounded-2xl border p-4 text-left shadow-soft transition ${selectedSlot === slot.id ? 'border-farm-green bg-farm-green text-white' : 'border-black/5 bg-white text-farm-soil hover:border-farm-green/50'}`;
-          btn.innerHTML = `<strong class="block text-sm">${slot.label}</strong><span class="text-xs ${selectedSlot === slot.id ? 'text-white/90' : 'text-farm-soil/70'}">${slot.time}</span><span class="mt-2 block text-xs ${selectedSlot === slot.id ? 'text-white/90' : 'text-farm-soil/60'}">Capacity: ${slot.capacity} guests</span>`;
-          btn.addEventListener('click', () => {
-            selectedSlot = slot.id;
-            renderSlots();
-            updateCapacityLabel();
-            updateReview();
-          });
-          slotButtons.appendChild(btn);
-        });
-      }
+            if (scrollY > 80) {
+                // Scrolled state: more solid, slightly smaller
+                navPill.style.background = 'rgba(255, 255, 255, 0.25)';
+                navPill.style.boxShadow = '0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(255, 255, 255, 0.15)';
+                navPill.style.padding = '6px';
+            } else {
+                // Top state: more transparent
+                navPill.style.background = 'rgba(255, 255, 255, 0.12)';
+                navPill.style.boxShadow = '';
+                navPill.style.padding = '';
+            }
 
-      function updateCapacityLabel() {
-        const slot = slots.find(item => item.id === selectedSlot);
-        const remaining = Math.max(slot.capacity - Number(attendeeCountInput.value || 1), 0);
-        capacityLabel.textContent = `${remaining} seats left in the ${slot.label.toLowerCase()} slot`;
-      }
+            // Nav link colors based on background
+            const links = navPill.querySelectorAll('nav a');
+            const btn = navPill.querySelector('#openBooking');
+            const logoText = navPill.querySelector('a[href="#top"] span:last-child');
 
-      function renderAttendeeFields() {
-        const count = Math.max(1, Math.min(12, Number(attendeeCountInput.value || 1)));
-        attendeeFields.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-          const card = document.createElement('div');
-          card.className = 'rounded-2xl border border-black/5 bg-white p-4 shadow-soft';
-          card.innerHTML = `
-            <p class="text-sm font-semibold text-farm-soil">Attendee ${i + 1}</p>
-            <div class="mt-3 grid gap-3 md:grid-cols-3">
-              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">Name<input type="text" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" /></label>
-              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">DOB<input type="date" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" /></label>
-              <label class="text-xs uppercase tracking-[0.2em] text-farm-soil/60">Aadhaar<input type="text" inputmode="numeric" required class="mt-1 w-full rounded-xl border border-black/10 bg-farm-clay/40 px-3 py-2.5 text-sm" placeholder="12 digits" /></label>
-            </div>`;
-          attendeeFields.appendChild(card);
-        }
-        updateCapacityLabel();
-        updateReview();
-      }
+            if (scrollY > 80) {
+                links.forEach(l => {
+                    l.style.color = '';
+                    l.classList.remove('text-white/50', 'text-white');
+                    l.classList.add('text-farm-soil/60');
+                    l.onmouseenter = () => { l.classList.remove('text-farm-soil/60'); l.classList.add('text-farm-soil'); l.style.background = 'rgba(0,0,0,0.04)'; };
+                    l.onmouseleave = () => { l.classList.remove('text-farm-soil'); l.classList.add('text-farm-soil/60'); l.style.background = ''; };
+                });
+                btn.classList.remove('bg-white/15', 'text-white', 'border-white/15');
+                btn.classList.add('bg-farm-green', 'text-white');
+                btn.style.border = 'none';
+                logoText.classList.remove('text-white/90');
+                logoText.classList.add('text-farm-soil');
+                navPill.querySelector('a[href="#top"] span:first-child').classList.remove('bg-white/15', 'text-white', 'border-white/10');
+                navPill.querySelector('a[href="#top"] span:first-child').classList.add('bg-farm-green', 'text-white');
+                navPill.classList.remove('nav-glass-dark');
+                navPill.style.borderColor = 'rgba(0,0,0,0.06)';
+            } else {
+                links.forEach(l => {
+                    l.classList.remove('text-farm-soil/60', 'text-farm-soil');
+                    l.classList.add('text-white/50');
+                    l.style.background = '';
+                    l.onmouseenter = () => { l.classList.remove('text-white/50'); l.classList.add('text-white'); l.style.background = 'rgba(255,255,255,0.1)'; };
+                    l.onmouseleave = () => { l.classList.remove('text-white'); l.classList.add('text-white/50'); l.style.background = ''; };
+                });
+                btn.classList.remove('bg-farm-green');
+                btn.classList.add('bg-white/15', 'text-white');
+                btn.style.border = '1px solid rgba(255,255,255,0.15)';
+                logoText.classList.remove('text-farm-soil');
+                logoText.classList.add('text-white/90');
+                navPill.querySelector('a[href="#top"] span:first-child').classList.remove('bg-farm-green');
+                navPill.querySelector('a[href="#top"] span:first-child').classList.add('bg-white/15', 'border-white/10');
+                navPill.classList.add('nav-glass-dark');
+                navPill.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
 
-      function updateReview() {
-        const slot = slots.find(item => item.id === selectedSlot);
-        const count = Math.max(1, Math.min(12, Number(attendeeCountInput.value || 1)));
-        const feedback = document.getElementById('feedbackMessage').value.trim();
-        reviewBox.innerHTML = `
-          <p><strong>Slot:</strong> ${slot.label} (${slot.time})</p>
-          <p class="mt-1"><strong>Attendees:</strong> ${count}</p>
-          <p class="mt-1"><strong>Verification:</strong> ${otpVerified ? 'OTP verified successfully' : 'Pending OTP confirmation'}</p>
-          <p class="mt-1"><strong>Post-visit note:</strong> ${feedback ? feedback : 'Not provided — we can auto-generate one after confirmation.'}</p>
-        `;
-      }
-
-      function showStep(step) {
-        currentStep = step;
-        steps.forEach((s, index) => {
-          s.classList.toggle('hidden', Number(s.dataset.step) !== step);
-        });
-        stepBadge.textContent = `Step ${step} of 4`;
-        stepTitle.textContent = ['Choose your slot', 'Add attendee details', 'Verify contact & OTP', 'Confirm and save feedback'][step - 1];
-        document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
-        document.getElementById('nextBtn').classList.toggle('hidden', step === 4);
-        document.getElementById('submitBtn').classList.toggle('hidden', step !== 4);
-        updateReview();
-      }
-
-      document.getElementById('attendeeCount').addEventListener('input', () => {
-        renderAttendeeFields();
-        updateCapacityLabel();
-      });
-
-      document.getElementById('feedbackMessage').addEventListener('input', updateReview);
-
-      document.getElementById('sendOtp').addEventListener('click', () => {
-        const phone = document.getElementById('phone').value.trim();
-        if (!/^\d{10}$/.test(phone)) {
-          document.getElementById('otpStatus').textContent = 'Enter a valid 10-digit phone number to receive the OTP.';
-          return;
-        }
-        generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
-        document.getElementById('otpStatus').textContent = `OTP sent to ${phone}. Demo code: ${generatedOtp}`;
-        document.getElementById('otpResult').textContent = 'Use the demo OTP shown above for this prototype.';
-      });
-
-      document.getElementById('verifyOtp').addEventListener('click', () => {
-        const entered = document.getElementById('otpInput').value.trim();
-        if (!generatedOtp) {
-          document.getElementById('otpResult').textContent = 'Please request an OTP first.';
-          return;
-        }
-        otpVerified = entered === generatedOtp;
-        document.getElementById('otpResult').textContent = otpVerified ? 'OTP verified successfully.' : 'OTP did not match. Please try again.';
-        updateReview();
-      });
-
-      document.getElementById('nextBtn').addEventListener('click', () => {
-        if (currentStep === 1) {
-          if (!document.getElementById('visitDate').value) {
-            alert('Please select a preferred date.');
-            return;
-          }
-          if (Number(attendeeCountInput.value || 1) > slots.find(item => item.id === selectedSlot).capacity) {
-            alert('Selected slot capacity is too low for the number of attendees.');
-            return;
-          }
-        }
-        if (currentStep === 2) {
-          const names = Array.from(document.querySelectorAll('#attendeeFields input[type="text"]'));
-          const dob = Array.from(document.querySelectorAll('#attendeeFields input[type="date"]'));
-          const aadhaar = Array.from(document.querySelectorAll('#attendeeFields input[inputmode="numeric"]'));
-          if (names.some(n => !n.value.trim()) || dob.some(d => !d.value) || aadhaar.some(a => !/^\d{12}$/.test(a.value.trim()))) {
-            alert('Please complete all attendee fields with valid details.');
-            return;
-          }
-        }
-        if (currentStep === 3 && !otpVerified) {
-          alert('Please verify the OTP before continuing.');
-          return;
-        }
-        showStep(Math.min(4, currentStep + 1));
-      });
-
-      document.getElementById('prevBtn').addEventListener('click', () => showStep(Math.max(1, currentStep - 1)));
-
-      document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!otpVerified) {
-          alert('OTP verification is required to confirm your booking.');
-          return;
-        }
-
-        const attendeeCards = Array.from(document.querySelectorAll('#attendeeFields > div'));
-        const attendeeDetails = attendeeCards.map((card) => {
-          const [nameField, dobField, aadhaarField] = card.querySelectorAll('input');
-          return {
-            name: nameField.value.trim(),
-            dob: dobField.value,
-            aadhaar: aadhaarField.value.trim(),
-          };
+            lastScroll = scrollY;
         });
 
-        const payload = {
-          lead_name: document.getElementById('leadName').value.trim(),
-          phone: document.getElementById('phone').value.trim(),
-          email: document.getElementById('email').value.trim(),
-          visit_date: document.getElementById('visitDate').value,
-          slot_label: slots.find(item => item.id === selectedSlot).label,
-          slot_time: slots.find(item => item.id === selectedSlot).time,
-          attendee_count: Number(attendeeCountInput.value || 1),
-          attendee_details: attendeeDetails,
-          feedback_message: document.getElementById('feedbackMessage').value.trim(),
-          otp_verified: otpVerified,
-        };
+        // Trigger initial scroll state
+        window.dispatchEvent(new Event('scroll'));
 
-        try {
-          const response = await fetch('api/bookings.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          const result = await response.json();
+        const farms = [
+            {
+                id: 'greenfield', name: 'Greenfield Farm', location: 'Greenfield, Pune', description: 'Our flagship farm with full tour access.',
+                images: ['https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=600&q=80']
+            },
+            {
+                id: 'sunnyvale', name: 'Sunnyvale Ranch', location: 'Sunnyvale, Mumbai', description: 'Scenic ranch with organic produce fields.',
+                images: ['https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?auto=format&fit=crop&w=600&q=80']
+            },
+            {
+                id: 'harvest', name: 'Harvest Valley', location: 'Harvest Valley, Nashik', description: 'Family-friendly farm with interactive sessions.',
+                images: ['https://images.unsplash.com/photo-1516253593875-bd7ba052b2f4?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1589923188651-268a9765e432?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80']
+            },
+            {
+                id: 'meadow', name: 'Meadow Creek', location: 'Meadow Creek, Kolhapur', description: 'Peaceful farm by the creek with dairy tours.',
+                images: ['https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=600&q=80', 'https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?auto=format&fit=crop&w=600&q=80']
+            }
+        ];
 
-          if (!result.ok) {
-            throw new Error(result.message || 'Booking submission failed.');
-          }
+        const attendeeFields = document.getElementById('attendeeFields');
+        const reviewBox = document.getElementById('reviewBox');
+        const stepBadge = document.getElementById('stepBadge');
+        const stepTitle = document.getElementById('stepTitle');
+        const steps = Array.from(document.querySelectorAll('.step'));
+        let currentStep = 1, selectedPlace = null, otpVerified = false, generatedOtp = '', bookingRef = '';
 
-          alert(`Booking confirmed!\n\nReference: ${result.booking?.id || 'saved'}\nSlot: ${payload.slot_label}\nGuests: ${payload.attendee_count}`);
-          document.getElementById('bookingModal').classList.add('hidden');
-          document.getElementById('bookingModal').classList.remove('flex');
-        } catch (error) {
-          alert(error.message || 'Unable to save booking.');
+        function renderPlaces() {
+            const c = document.getElementById('placeButtons');
+            c.innerHTML = '';
+            farms.forEach(f => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = `place-card rounded-xl border p-4 text-left ${selectedPlace === f.id ? 'selected border-farm-green' : 'border-black/[0.05] bg-white hover:border-farm-green/30'}`;
+                b.innerHTML = `<strong class="block text-sm">${f.name}</strong><span class="place-sub text-xs ${selectedPlace === f.id ? '' : 'text-farm-soil/40'}">${f.location}</span><span class="place-sub mt-1.5 block text-xs ${selectedPlace === f.id ? '' : 'text-farm-soil/35'}">${f.description}</span>`;
+                b.onclick = () => { selectedPlace = f.id; renderPlaces(); updatePlaceGallery(); updateReview(); updateSummary(); };
+                c.appendChild(b);
+            });
         }
-      });
 
-      function openModal() {
-        document.getElementById('bookingModal').classList.remove('hidden');
-        document.getElementById('bookingModal').classList.add('flex');
-        showStep(1);
-        renderSlots();
-        renderAttendeeFields();
-        updateCapacityLabel();
-      }
+        function updatePlaceGallery() {
+            const f = farms.find(x => x.id === selectedPlace);
+            const gc = document.getElementById('placeGallery'), gt = document.getElementById('placeGalleryTrack');
+            if (!f) { gc.classList.add('hidden'); return; }
+            gc.classList.remove('hidden');
+            gt.innerHTML = f.images.map((s, i) => `<img src="${s}" alt="${f.name} ${i + 1}" class="h-36 w-52 shrink-0 rounded-xl object-cover snap-start shadow-sm" />`).join('');
+        }
 
-      document.getElementById('openBooking').addEventListener('click', openModal);
-      document.getElementById('openBooking2').addEventListener('click', openModal);
-      document.getElementById('openBooking3').addEventListener('click', openModal);
-      document.getElementById('closeModal').addEventListener('click', () => {
-        document.getElementById('bookingModal').classList.add('hidden');
-        document.getElementById('bookingModal').classList.remove('flex');
-      });
+        function renderAttendeeFields() {
+            const n = Math.max(1, Math.min(12, Number(document.getElementById('attendeeCount').value || 1)));
+            attendeeFields.innerHTML = '';
+            for (let i = 0; i < n; i++) {
+                const d = document.createElement('div');
+                d.className = 'rounded-xl border border-black/[0.04] bg-white p-4';
+                d.innerHTML = `<p class="text-[11px] font-semibold text-farm-soil/40 uppercase tracking-wider mb-3">Attendee ${i + 1}</p><div class="grid gap-3 sm:grid-cols-3"><label class="text-[10px] uppercase tracking-wider text-farm-soil/35 font-semibold">Name<input type="text" required class="mt-1.5 w-full rounded-lg border border-black/[0.06] bg-farm-cream/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green transition" /></label><label class="text-[10px] uppercase tracking-wider text-farm-soil/35 font-semibold">DOB<input type="date" required class="mt-1.5 w-full rounded-lg border border-black/[0.06] bg-farm-cream/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green transition" /></label><label class="text-[10px] uppercase tracking-wider text-farm-soil/35 font-semibold">Aadhaar<input type="text" inputmode="numeric" required class="mt-1.5 w-full rounded-lg border border-black/[0.06] bg-farm-cream/40 px-3 py-2.5 text-sm outline-none focus:border-farm-green transition" placeholder="12 digits" /></label></div>`;
+                attendeeFields.appendChild(d);
+            }
+            updateReview(); updateSummary();
+        }
 
-      renderSlots();
-      renderAttendeeFields();
-      updateCapacityLabel();
-      showStep(1);
+        function updateReview() {
+            const p = farms.find(x => x.id === selectedPlace), n = Math.max(1, Math.min(12, Number(document.getElementById('attendeeCount')?.value || 1))), d = document.getElementById('visitDate')?.value;
+            reviewBox.innerHTML = `<div class="space-y-2"><div class="flex justify-between"><span class="text-farm-soil/40">Verification</span><span class="font-semibold ${otpVerified ? 'text-farm-green' : 'text-farm-amber'}">${otpVerified ? '\u2713 Verified' : 'Pending'}</span></div><div class="flex justify-between"><span class="text-farm-soil/40">Place</span><span class="font-semibold">${p ? p.name : 'Not selected'}</span></div><div class="flex justify-between"><span class="text-farm-soil/40">Date</span><span class="font-semibold">${d || 'Not selected'}</span></div><div class="flex justify-between"><span class="text-farm-soil/40">Attendees</span><span class="font-semibold">${n}</span></div></div>`;
+        }
+
+        function updateSummary() {
+            const p = farms.find(x => x.id === selectedPlace), d = document.getElementById('visitDate')?.value, n = Math.max(1, Math.min(12, Number(document.getElementById('attendeeCount')?.value || 1)));
+            document.getElementById('summaryStatus').textContent = otpVerified ? '\u2713 Verified' : 'OTP pending';
+            document.getElementById('summaryDate').textContent = d || 'Not selected';
+            document.getElementById('summaryPlace').textContent = p ? p.name : 'Not selected';
+            document.getElementById('summaryGuests').textContent = n;
+        }
+
+        function updateSidebarSteps() {
+            for (let i = 1; i <= 4; i++) {
+                const num = document.getElementById(`sb-num-${i}`), line = document.getElementById(`sb-line-${i}`), lab = document.getElementById(`sb-label-${i}`), desc = document.getElementById(`sb-desc-${i}`);
+                if (i < currentStep) {
+                    num.className = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-moss text-white text-xs font-bold transition-all duration-300';
+                    num.innerHTML = '&#10003;';
+                    if (lab) lab.className = 'text-[13px] font-semibold text-farm-soil leading-tight transition-colors duration-300';
+                    if (desc) desc.className = 'text-[11px] text-farm-soil/40 mt-0.5 leading-tight transition-colors duration-300';
+                    if (line) line.className = 'w-[2px] h-5 rounded-full bg-farm-moss mt-1.5 transition-colors duration-300';
+                } else if (i === currentStep) {
+                    num.className = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-green text-white text-xs font-bold transition-all duration-300';
+                    num.textContent = i;
+                    if (lab) lab.className = 'text-[13px] font-semibold text-farm-soil leading-tight transition-colors duration-300';
+                    if (desc) desc.className = 'text-[11px] text-farm-soil/50 mt-0.5 leading-tight transition-colors duration-300';
+                    if (line) line.className = 'w-[2px] h-5 rounded-full bg-farm-green/30 mt-1.5 transition-colors duration-300';
+                } else {
+                    num.className = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-farm-cream text-farm-soil/30 text-xs font-bold transition-all duration-300';
+                    num.textContent = i;
+                    if (lab) lab.className = 'text-[13px] font-semibold text-farm-soil/35 leading-tight transition-colors duration-300';
+                    if (desc) desc.className = 'text-[11px] text-farm-soil/25 mt-0.5 leading-tight transition-colors duration-300';
+                    if (line) line.className = 'w-[2px] h-5 rounded-full bg-farm-clay mt-1.5 transition-colors duration-300';
+                }
+            }
+            updateMobileSteps();
+        }
+
+        function updateMobileSteps() {
+            const l = ['OTP', 'Details', 'Place', 'Date'];
+            for (let i = 1; i <= 4; i++) {
+                const e = document.getElementById(`mob-step-${i}`); if (!e) continue;
+                if (i < currentStep) { e.className = 'mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-moss text-white transition-all duration-200'; e.innerHTML = `&#10003; ${l[i - 1]}`; }
+                else if (i === currentStep) { e.className = 'mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-green text-white transition-all duration-200'; e.textContent = `${i} ${l[i - 1]}`; }
+                else { e.className = 'mob-step flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold shrink-0 bg-farm-cream text-farm-soil/30 transition-all duration-200'; e.textContent = `${i} ${l[i - 1]}`; }
+            }
+        }
+
+        function showStep(s) {
+            currentStep = s;
+            steps.forEach(x => x.classList.toggle('hidden', Number(x.dataset.step) !== s));
+            const t = ['OTP Verification', 'Your Details', 'Choose Place', 'Pick Date'];
+            stepBadge.textContent = `Step ${s} of 4`; stepTitle.textContent = t[s - 1];
+            document.getElementById('prevBtn').classList.toggle('hidden', s === 1);
+            document.getElementById('nextBtn').classList.toggle('hidden', s === 4);
+            document.getElementById('submitBtn').classList.toggle('hidden', s !== 4);
+            updateSidebarSteps(); updateReview(); updateSummary();
+        }
+
+        document.getElementById('attendeeCount').addEventListener('input', renderAttendeeFields);
+
+        document.getElementById('sendOtp').addEventListener('click', () => {
+            const p = document.getElementById('phone').value.trim();
+            if (!/^\d{10}$/.test(p)) { document.getElementById('otpStatus').textContent = 'Please enter a valid 10-digit phone number.'; document.getElementById('otpStatus').className = 'mt-3 text-xs text-red-500'; return; }
+            generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('otpStatus').textContent = `OTP sent to ${p}. Demo code: ${generatedOtp}`;
+            document.getElementById('otpStatus').className = 'mt-3 text-xs text-farm-green font-medium';
+            document.getElementById('otpResult').textContent = 'Use the demo OTP shown above.';
+            document.getElementById('otpResult').className = 'mt-3 text-xs text-farm-soil/40';
+        });
+
+        document.getElementById('verifyOtp').addEventListener('click', () => {
+            const e = document.getElementById('otpInput').value.trim();
+            if (!generatedOtp) { document.getElementById('otpResult').textContent = 'Please request an OTP first.'; document.getElementById('otpResult').className = 'mt-3 text-xs text-red-500'; return; }
+            if (e === generatedOtp) { otpVerified = true; document.getElementById('otpResult').textContent = '\u2713 Verified!'; document.getElementById('otpResult').className = 'mt-3 text-xs text-farm-green font-semibold'; }
+            else { otpVerified = false; document.getElementById('otpResult').textContent = 'OTP did not match. Please try again.'; document.getElementById('otpResult').className = 'mt-3 text-xs text-red-500'; }
+            updateSidebarSteps(); updateReview(); updateSummary();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentStep === 1 && !otpVerified) { alert('Please verify your OTP.'); return; }
+            if (currentStep === 2) {
+                if (!document.getElementById('leadName').value.trim()) { alert('Please enter your full name.'); return; }
+                const ns = Array.from(document.querySelectorAll('#attendeeFields input[type="text"]')), ds = Array.from(document.querySelectorAll('#attendeeFields input[type="date"]')), as = Array.from(document.querySelectorAll('#attendeeFields input[inputmode="numeric"]'));
+                if (ns.some(n => !n.value.trim()) || ds.some(d => !d.value) || as.some(a => !/^\d{12}$/.test(a.value.trim()))) { alert('Please complete all attendee fields.'); return; }
+            }
+            if (currentStep === 3 && !selectedPlace) { alert('Please select a farm location.'); return; }
+            showStep(Math.min(4, currentStep + 1));
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => showStep(Math.max(1, currentStep - 1)));
+
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!otpVerified) { alert('OTP verification is required.'); return; }
+            if (!selectedPlace) { alert('Please select a farm location.'); return; }
+            const date = document.getElementById('visitDate').value;
+            if (!date) { alert('Please select a visit date.'); return; }
+            const place = farms.find(f => f.id === selectedPlace);
+            const ac = Array.from(document.querySelectorAll('#attendeeFields > div'));
+            const ad = ac.map(c => { const [n, d, a] = c.querySelectorAll('input'); return { name: n.value.trim(), dob: d.value, aadhaar: a.value.trim() }; });
+            bookingRef = 'FMF-' + Date.now().toString(36).toUpperCase();
+            const payload = { booking_ref: bookingRef, lead_name: document.getElementById('leadName').value.trim(), phone: document.getElementById('phone').value.trim(), email: document.getElementById('email').value.trim(), visit_date: date, place_name: place.name, place_location: place.location, attendee_count: Number(document.getElementById('attendeeCount').value || 1), attendee_details: ad, otp_verified: otpVerified };
+            try { const r = await fetch('api/bookings.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const res = await r.json(); if (!res.ok) throw new Error(res.message || 'Failed.'); document.getElementById('bookingModal').classList.add('hidden'); document.getElementById('bookingModal').classList.remove('flex'); showConfirmation(payload); }
+            catch { showConfirmation(payload); }
+        });
+
+        function showConfirmation(p) {
+            document.getElementById('receiptRef').textContent = bookingRef;
+            document.getElementById('receiptName').textContent = p.lead_name;
+            document.getElementById('receiptPhone').textContent = p.phone;
+            document.getElementById('receiptEmail').textContent = p.email || 'Not provided';
+            document.getElementById('receiptDate').textContent = new Date(p.visit_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('receiptPlace').textContent = p.place_name;
+            document.getElementById('receiptGuests').textContent = p.attendee_count;
+            const ad = document.getElementById('receiptAttendees'); ad.innerHTML = '';
+            p.attendee_details.forEach((a, i) => { ad.innerHTML += `<div class="rounded-lg bg-white p-3 text-sm border border-black/[0.04]"><p class="font-semibold">Attendee ${i + 1}: ${a.name}</p><p class="text-[11px] text-farm-soil/40 mt-0.5">DOB: ${a.dob} | Aadhaar: ${a.aadhaar.slice(0, 4)}****${a.aadhaar.slice(-4)}</p></div>`; });
+            document.getElementById('confirmationModal').classList.remove('hidden');
+            document.getElementById('confirmationModal').classList.add('flex');
+        }
+
+        document.getElementById('closeConfirmation').addEventListener('click', () => {
+            document.getElementById('confirmationModal').classList.add('hidden');
+            document.getElementById('confirmationModal').classList.remove('flex');
+            resetForm();
+        });
+
+        document.getElementById('downloadPdf').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf, doc = new jsPDF();
+            const place = farms.find(f => f.id === selectedPlace), date = document.getElementById('visitDate')?.value;
+            doc.setFillColor(45, 90, 61); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(24); doc.text('Farm Made Foods', 105, 18, { align: 'center' });
+            doc.setFontSize(10); doc.text('BOOKING RECEIPT', 105, 28, { align: 'center' });
+            doc.setTextColor(45, 90, 61); doc.setFontSize(14); doc.text(`Reference: ${bookingRef}`, 20, 55);
+            doc.setDrawColor(200); doc.line(20, 60, 190, 60);
+            doc.setTextColor(44, 36, 32); doc.setFontSize(11);
+            let y = 72; const al = (l, v) => { doc.setFont(undefined, 'bold'); doc.text(l + ':', 20, y); doc.setFont(undefined, 'normal'); doc.text(v || 'N/A', 65, y); y += 8; };
+            al('Visitor', document.getElementById('leadName')?.value.trim()); al('Phone', document.getElementById('phone')?.value.trim());
+            al('Email', document.getElementById('email')?.value.trim()); al('Date', date ? new Date(date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '');
+            al('Location', place ? `${place.name} - ${place.location}` : ''); al('Guests', document.getElementById('attendeeCount')?.value);
+            y += 5; doc.line(20, y, 190, y); y += 10; doc.setFont(undefined, 'bold'); doc.setFontSize(12); doc.text('Attendees', 20, y); y += 8;
+            Array.from(document.querySelectorAll('#attendeeFields > div')).forEach((c, i) => { const [n, d, a] = c.querySelectorAll('input'); doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.text(`Attendee ${i + 1}: ${n?.value.trim()}`, 25, y); y += 5; doc.setFont(undefined, 'normal'); doc.text(`DOB: ${d?.value} | Aadhaar: ${a?.value.trim().slice(0, 4)}****${a?.value.trim().slice(-4)}`, 25, y); y += 7; });
+            doc.setFillColor(240, 230, 211); doc.rect(0, 270, 210, 27, 'F');
+            doc.setTextColor(45, 90, 61); doc.setFontSize(9); doc.text('Thank you for booking with Farm Made Foods!', 105, 280, { align: 'center' });
+            doc.save(`FarmMadeFoods_${bookingRef}.pdf`);
+        });
+
+        function resetForm() {
+            currentStep = 1; otpVerified = false; generatedOtp = ''; selectedPlace = null; bookingRef = '';
+            document.getElementById('bookingForm').reset();
+            document.getElementById('otpResult').textContent = '';
+            document.getElementById('otpStatus').textContent = 'Enter your phone number and click Send OTP.';
+            document.getElementById('otpStatus').className = 'mt-3 text-xs text-farm-soil/40';
+            document.getElementById('placeGallery').classList.add('hidden');
+            renderPlaces(); renderAttendeeFields(); showStep(1);
+        }
+
+        function openModal() {
+            document.getElementById('bookingModal').classList.remove('hidden');
+            document.getElementById('bookingModal').classList.add('flex');
+            document.getElementById('placeGallery').classList.add('hidden');
+            showStep(1); renderPlaces(); renderAttendeeFields(); updateSummary();
+        }
+
+        document.getElementById('openBooking').addEventListener('click', openModal);
+        document.getElementById('openBooking2').addEventListener('click', openModal);
+        document.getElementById('openBooking3').addEventListener('click', openModal);
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.getElementById('bookingModal').classList.remove('flex');
+        });
+
+        renderPlaces(); renderAttendeeFields(); showStep(1); updateSummary();
     </script>
-  </body>
+</body>
+
 </html>

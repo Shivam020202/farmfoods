@@ -3,8 +3,33 @@ require_once __DIR__ . '/../config.php';
 
 header('Content-Type: application/json');
 
-function supabaseRequest(string $method, string $path, array $payload = [], array $query = []): array {
-    $cfg = requireSupabaseConfig();
+function fallbackBookingsPath(): string
+{
+    return __DIR__ . '/demo_bookings.json';
+}
+
+function loadFallbackBookings(): array
+{
+    $file = fallbackBookingsPath();
+    if (!file_exists($file)) {
+        return [];
+    }
+
+    $data = json_decode(file_get_contents($file), true);
+    return is_array($data) ? $data : [];
+}
+
+function saveFallbackBookings(array $bookings): void
+{
+    file_put_contents(fallbackBookingsPath(), json_encode($bookings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+}
+
+function supabaseRequest(string $method, string $path, array $payload = [], array $query = []): array
+{
+    $cfg = supabaseConfig();
+    if ($cfg['url'] === '' || $cfg['service_role_key'] === '') {
+        return ['ok' => false, 'status' => 503, 'message' => 'Supabase not configured', 'fallback' => true];
+    }
 
     $url = rtrim($cfg['url'], '/') . '/rest/v1/' . ltrim($path, '/');
     if ($query) {
@@ -50,6 +75,12 @@ if ($method === 'GET') {
         'select' => 'id,lead_name,phone,email,visit_date,slot_label,attendee_count,status,feedback_message,created_at',
         'order' => 'created_at.desc',
     ]);
+
+    if (!$result['ok'] && !empty($result['fallback'])) {
+        echo json_encode(['ok' => true, 'body' => loadFallbackBookings()], JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     echo json_encode($result, JSON_UNESCAPED_SLASHES);
     exit;
 }
@@ -83,6 +114,20 @@ if ($method === 'POST') {
     ];
 
     $result = supabaseRequest('POST', 'farm_visit_bookings', $payload);
+    if (!$result['ok'] && !empty($result['fallback'])) {
+        $bookings = loadFallbackBookings();
+        $booking = [
+            'id' => 'demo-' . bin2hex(random_bytes(3)),
+            'created_at' => gmdate('Y-m-d\TH:i:s\Z'),
+            ...$payload,
+        ];
+        $bookings[] = $booking;
+        saveFallbackBookings($bookings);
+
+        echo json_encode(['ok' => true, 'message' => 'Booking created successfully.', 'booking' => $booking], JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     if (!$result['ok']) {
         http_response_code($result['status'] ?: 500);
         echo json_encode(['ok' => false, 'message' => 'Booking insert failed', 'details' => $result], JSON_UNESCAPED_SLASHES);
@@ -106,11 +151,28 @@ if ($method === 'PATCH') {
     }
 
     $payload = [];
-    if (isset($input['status'])) $payload['status'] = $input['status'];
-    if (isset($input['admin_note'])) $payload['admin_note'] = $input['admin_note'];
-    if (isset($input['feedback_message'])) $payload['feedback_message'] = $input['feedback_message'];
+    if (isset($input['status']))
+        $payload['status'] = $input['status'];
+    if (isset($input['admin_note']))
+        $payload['admin_note'] = $input['admin_note'];
+    if (isset($input['feedback_message']))
+        $payload['feedback_message'] = $input['feedback_message'];
 
     $result = supabaseRequest('PATCH', 'farm_visit_bookings?id=eq.' . rawurlencode($input['id']), $payload);
+    if (!$result['ok'] && !empty($result['fallback'])) {
+        $bookings = loadFallbackBookings();
+        foreach ($bookings as &$booking) {
+            if ($booking['id'] === $input['id']) {
+                $booking = array_merge($booking, $payload);
+            }
+        }
+        unset($booking);
+        saveFallbackBookings($bookings);
+
+        echo json_encode(['ok' => true, 'message' => 'Booking updated successfully.', 'booking' => null], JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     if (!$result['ok']) {
         http_response_code($result['status'] ?: 500);
         echo json_encode(['ok' => false, 'message' => 'Booking update failed', 'details' => $result], JSON_UNESCAPED_SLASHES);
@@ -130,6 +192,15 @@ if ($method === 'DELETE') {
     }
 
     $result = supabaseRequest('DELETE', 'farm_visit_bookings?id=eq.' . rawurlencode($input['id']));
+    if (!$result['ok'] && !empty($result['fallback'])) {
+        $bookings = loadFallbackBookings();
+        $bookings = array_values(array_filter($bookings, fn($booking) => $booking['id'] !== $input['id']));
+        saveFallbackBookings($bookings);
+
+        echo json_encode(['ok' => true, 'message' => 'Booking deleted successfully.'], JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     if (!$result['ok']) {
         http_response_code($result['status'] ?: 500);
         echo json_encode(['ok' => false, 'message' => 'Booking delete failed', 'details' => $result], JSON_UNESCAPED_SLASHES);

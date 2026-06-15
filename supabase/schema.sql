@@ -18,8 +18,10 @@ create table if not exists public.farm_visit_bookings (
 
 alter table public.farm_visit_bookings enable row level security;
 
-create policy if not exists "Allow service role full access" on public.farm_visit_bookings
+drop policy if exists "Allow service role full access" on public.farm_visit_bookings;
+create policy "Allow service role full access" on public.farm_visit_bookings
 for all using (true) with check (true);
 
-create policy if not exists "Allow anon read access" on public.farm_visit_bookings
+drop policy if exists "Allow anon read access" on public.farm_visit_bookings;
+create policy "Allow anon read access" on public.farm_visit_bookings
 for select using (true);

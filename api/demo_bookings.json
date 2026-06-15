@@ -1,0 +1,30 @@
+[
+  {
+    "id": "demo-001",
+    "lead_name": "Aarav Sharma",
+    "phone": "9876543210",
+    "email": "aarav@example.com",
+    "visit_date": "2026-06-12",
+    "slot_label": "Morning",
+    "slot_time": "8:30 AM – 10:30 AM",
+    "attendee_count": 2,
+    "status": "pending",
+    "feedback_message": "We would love to learn more about the farm and free-range eggs.",
+    "admin_note": "Follow up with the family after confirmation.",
+    "created_at": "2026-06-08T09:30:00Z"
+  },
+  {
+    "id": "demo-002",
+    "lead_name": "Meera Iyer",
+    "phone": "9955112233",
+    "email": "meera@example.com",
+    "visit_date": "2026-06-15",
+    "slot_label": "Noon",
+    "slot_time": "12:00 PM – 2:00 PM",
+    "attendee_count": 4,
+    "status": "confirmed",
+    "feedback_message": "A calm and educational visit would be ideal.",
+    "admin_note": "Confirmed for small group visit.",
+    "created_at": "2026-06-08T10:00:00Z"
+  }
+]
