@@ -1611,7 +1611,7 @@
             const ad = ac.map(c => { const [n, d, a] = c.querySelectorAll('input'); return { name: n.value.trim(), dob: d.value, aadhaar: a.value.trim() }; });
             bookingRef = 'FMF-' + Date.now().toString(36).toUpperCase();
             const payload = { booking_ref: bookingRef, lead_name: document.getElementById('leadName').value.trim(), phone: document.getElementById('phone').value.trim(), email: document.getElementById('email').value.trim(), visit_date: date, place_name: place.name, place_location: place.location, attendee_count: Number(document.getElementById('attendeeCount').value || 1), attendee_details: ad, otp_verified: otpVerified };
-            try { const r = await fetch('api/bookings.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const res = await r.json(); if (!res.ok) throw new Error(res.message || 'Failed.'); document.getElementById('bookingModal').classList.add('hidden'); document.getElementById('bookingModal').classList.remove('flex'); showConfirmation(payload); }
+            try { const r = await fetch('/api/bookings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const res = await r.json(); if (!res.ok) throw new Error(res.message || 'Failed.'); document.getElementById('bookingModal').classList.add('hidden'); document.getElementById('bookingModal').classList.remove('flex'); showConfirmation(payload); }
             catch { showConfirmation(payload); }
         });
 
