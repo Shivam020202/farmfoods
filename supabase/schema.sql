@@ -25,3 +25,22 @@ for all using (true) with check (true);
 drop policy if exists "Allow anon read access" on public.farm_visit_bookings;
 create policy "Allow anon read access" on public.farm_visit_bookings
 for select using (true);
+
+-- Available dates table
+create table if not exists public.farm_available_dates (
+  id uuid primary key default gen_random_uuid(),
+  visit_date date not null unique,
+  is_available boolean not null default true,
+  max_bookings integer default 12,
+  created_at timestamptz default now()
+);
+
+alter table public.farm_available_dates enable row level security;
+
+drop policy if exists "Allow service role full access on available_dates" on public.farm_available_dates;
+create policy "Allow service role full access on available_dates" on public.farm_available_dates
+for all using (true) with check (true);
+
+drop policy if exists "Allow anon read access on available_dates" on public.farm_available_dates;
+create policy "Allow anon read access on available_dates" on public.farm_available_dates
+for select using (true);

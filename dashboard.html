@@ -5,43 +5,235 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Farm Made Foods CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        farm: {
+                            green: '#1F6E59',
+                            deep: '#165443',
+                            dark: '#114233',
+                            amber: '#D4A843',
+                            cream: '#F5E6C9',
+                            soil: '#111A37',
+                            brown: '#B0896C',
+                            bark: '#8B6F4E',
+                        }
+                    },
+                    fontFamily: {
+                        slab: ['Zilla Slab', 'Georgia', 'serif'],
+                        serif: ['Lora', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Lora', Georgia, serif;
+            background: #F5E6C9;
+            color: #111A37;
+        }
+        .kraft-bg {
+            background-color: #F5E6C9;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(176,137,108,0.04) 3px, rgba(176,137,108,0.04) 6px),
+                repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(176,137,108,0.03) 4px, rgba(176,137,108,0.03) 8px);
+        }
+        .cardboard-card {
+            background-color: #FFFDF7;
+            border: 2px solid rgba(176,137,108,0.2);
+            box-shadow: 4px 4px 0px rgba(139,111,78,0.1);
+        }
+        .cardboard-green {
+            background-color: #1F6E59;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.01) 3px, rgba(255,255,255,0.01) 6px);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+        }
+        .btn-farm {
+            background-color: #1F6E59;
+            color: #F5E6C9;
+            border: 2px solid #165443;
+            border-radius: 0.5rem;
+            font-family: 'Zilla Slab', serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 0px rgba(22,84,67,0.3);
+        }
+        .btn-farm:hover { background-color: #165443; transform: translateY(-1px); }
+        .btn-kraft {
+            background-color: #FFFDF7;
+            color: #1F6E59;
+            border: 2px solid rgba(176,137,108,0.25);
+            border-radius: 0.5rem;
+            font-family: 'Zilla Slab', serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 0px rgba(139,111,78,0.08);
+        }
+        .btn-kraft:hover { background-color: #F5E6C9; transform: translateY(-1px); }
+        .input-farm {
+            border: 2px solid rgba(176,137,108,0.25);
+            background: #FFFDF7;
+            border-radius: 0.5rem;
+            font-family: 'Lora', serif;
+        }
+        .input-farm:focus { border-color: #1F6E59; outline: none; box-shadow: 0 0 0 3px rgba(31,110,89,0.1); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F5E6C9; }
+        ::-webkit-scrollbar-thumb { background: #B0896C; border-radius: 4px; }
+
+        /* === CMS tab styles === */
+        .cms-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 0.9rem;
+            font-family: 'Zilla Slab', Georgia, serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: rgba(245, 230, 201, 0.65);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+            border-radius: 0.4rem 0.4rem 0 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+        .cms-tab:hover { color: #F5E6C9; background: rgba(245,230,201,0.06); }
+        .cms-tab.is-active {
+            color: #F5E6C9;
+            border-bottom-color: #F5E6C9;
+            background: rgba(245,230,201,0.08);
+        }
+        .cms-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.85rem;
+            background: #F5E6C9;
+            color: #1F6E59;
+            border: 2px solid #165443;
+            border-radius: 0.5rem;
+            font-family: 'Zilla Slab', Georgia, serif;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 2px 2px 0px rgba(22,84,67,0.3);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cms-nav-link:hover { background: #EDD9B8; transform: translateY(-1px); }
+        .cms-tab-panel { animation: fadeInTab 0.18s ease-out; }
+        @keyframes fadeInTab { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 
-<body class="bg-[#fffaf4] text-[#2f3a30]">
+<body class="kraft-bg">
+    <!-- ═══════════════ NAVBAR ═══════════════ -->
+    <nav class="cardboard-green text-white sticky top-0 z-40 shadow-lg">
+        <div class="mx-auto max-w-7xl px-6 lg:px-10">
+            <div class="flex h-16 items-center justify-between gap-4">
+                <!-- Logo + brand -->
+                <a href="dashboard.html" class="flex items-center gap-3 shrink-0">
+                    <span class="flex h-11 items-center justify-center rounded-lg bg-farm-cream shadow-inner px-1.5">
+                        <img src="https://farmmadefoods.com/cdn/shop/files/FMF-LOGO_d88f48f3-09c0-43c3-839c-9dd4d22fd1fb.png?v=1695129293&width=130"
+                             alt="Farm Made Foods"
+                             class="h-9 w-auto object-contain"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                        <span class="hidden font-slab font-bold text-farm-deep text-sm tracking-wide">FMF</span>
+                    </span>
+                    <div class="hidden sm:block">
+                        <p class="font-slab text-lg font-bold leading-tight">Farm Made Foods</p>
+                        <p class="text-[10px] uppercase tracking-[0.25em] text-farm-cream/70 font-slab">CMS Console</p>
+                    </div>
+                </a>
+
+                <!-- Desktop tabs -->
+                <div class="hidden md:flex items-center gap-1">
+                    <button type="button" class="cms-tab is-active" data-tab="submissions">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        Submissions
+                    </button>
+                    <button type="button" class="cms-tab" data-tab="dates">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Date Setup
+                    </button>
+                </div>
+
+                <!-- Right side: view live site + refresh -->
+                <div class="flex items-center gap-2">
+                    <button id="refreshBtn" class="hidden sm:inline-flex btn-kraft px-3 py-1.5 text-xs items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        Refresh
+                    </button>
+                    <a href="index.html" target="_blank" rel="noopener" class="cms-nav-link">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <span class="hidden sm:inline">View site</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile tabs row -->
+            <div class="md:hidden flex items-center gap-1 pb-2 -mt-1 overflow-x-auto">
+                <button type="button" class="cms-tab is-active" data-tab="submissions">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Submissions
+                </button>
+                <button type="button" class="cms-tab" data-tab="dates">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Date Setup
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <main class="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 p-6 lg:p-10">
-        <header
-            class="rounded-[28px] bg-[linear-gradient(120deg,#1c321d_0%,#3f6b3a_65%,#6d8c52_100%)] p-6 text-white shadow-soft">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#edf5e2]">Farm Made Foods CMS</p>
-            <h1 class="mt-3 text-3xl font-semibold">Booking dashboard</h1>
-            <p class="mt-2 max-w-2xl text-white/80">Review submitted farm visit bookings, update status, and manage
-                follow-up notes from one place.</p>
+        <header class="cardboard-green rounded-2xl p-6 text-white">
+            <p class="text-xs uppercase tracking-[0.3em] text-farm-cream/60 font-slab">Farm Made Foods CMS</p>
+            <h1 class="mt-3 text-3xl font-semibold font-slab" id="cmsPageTitle">Submissions</h1>
+            <p class="mt-2 max-w-2xl text-white/80" id="cmsPageDesc">Review submitted farm visit bookings, update status, and manage follow-up notes from one place.</p>
         </header>
 
-        <section class="grid gap-6 lg:grid-cols-[1fr_360px]">
-            <article class="rounded-[28px] bg-white p-6 shadow-soft">
+        <!-- ═══════════════ TAB: SUBMISSIONS ═══════════════ -->
+        <section id="tabSubmissions" class="cms-tab-panel">
+        <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
+            <article class="cardboard-card rounded-2xl p-6">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-[#3f6b3a]">Bookings</p>
-                        <h2 class="mt-2 text-2xl font-semibold">Submitted visits</h2>
-                        <p class="mt-1 text-sm text-[#4b5b4d]">Use the filters below to review and manage the latest farm visits.</p>
+                        <p class="text-xs uppercase tracking-[0.3em] text-farm-green font-bold font-slab">Bookings</p>
+                        <h2 class="mt-2 text-2xl font-semibold font-slab">Submitted visits</h2>
+                        <p class="mt-1 text-sm text-farm-soil/50">Use the filters below to review and manage the latest farm visits.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button id="refreshBtn" class="rounded-full border border-[#dfe7df] bg-white px-4 py-2 text-sm text-[#345236]">Refresh</button>
-                        <a href="index.html" class="rounded-full bg-[#3f6b3a] px-4 py-2 text-sm text-white">Back to site</a>
+                        <button id="refreshBtn" class="btn-kraft px-4 py-2 text-sm">Refresh</button>
+                        <a href="index.html" class="btn-farm px-4 py-2 text-sm">Back to site</a>
                     </div>
                 </div>
 
                 <div class="mt-6 grid gap-4 md:grid-cols-4">
-                    <div class="rounded-2xl bg-[#f6f3eb] p-4"><p class="text-xs uppercase tracking-[0.25em] text-[#3f6b3a]">Total</p><p id="statTotal" class="mt-2 text-3xl font-semibold">0</p></div>
-                    <div class="rounded-2xl bg-[#f6f3eb] p-4"><p class="text-xs uppercase tracking-[0.25em] text-[#3f6b3a]">Pending</p><p id="statPending" class="mt-2 text-3xl font-semibold">0</p></div>
-                    <div class="rounded-2xl bg-[#f6f3eb] p-4"><p class="text-xs uppercase tracking-[0.25em] text-[#3f6b3a]">Confirmed</p><p id="statConfirmed" class="mt-2 text-3xl font-semibold">0</p></div>
-                    <div class="rounded-2xl bg-[#f6f3eb] p-4"><p class="text-xs uppercase tracking-[0.25em] text-[#3f6b3a]">Completed</p><p id="statCompleted" class="mt-2 text-3xl font-semibold">0</p></div>
+                    <div class="rounded-xl bg-farm-green/8 p-4 border border-farm-green/10"><p class="text-xs uppercase tracking-[0.25em] text-farm-green font-bold font-slab">Total</p><p id="statTotal" class="mt-2 text-3xl font-semibold font-slab">0</p></div>
+                    <div class="rounded-xl bg-amber-50 p-4 border border-amber-200"><p class="text-xs uppercase tracking-[0.25em] text-amber-700 font-bold font-slab">Pending</p><p id="statPending" class="mt-2 text-3xl font-semibold font-slab">0</p></div>
+                    <div class="rounded-xl bg-emerald-50 p-4 border border-emerald-200"><p class="text-xs uppercase tracking-[0.25em] text-emerald-700 font-bold font-slab">Confirmed</p><p id="statConfirmed" class="mt-2 text-3xl font-semibold font-slab">0</p></div>
+                    <div class="rounded-xl bg-sky-50 p-4 border border-sky-200"><p class="text-xs uppercase tracking-[0.25em] text-sky-700 font-bold font-slab">Completed</p><p id="statCompleted" class="mt-2 text-3xl font-semibold font-slab">0</p></div>
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <input id="searchInput" type="search" placeholder="Search by name or phone" class="w-full rounded-full border border-[#dfe7df] bg-[#faf9f6] px-4 py-2.5 text-sm md:max-w-xs" />
-                    <select id="statusFilter" class="rounded-full border border-[#dfe7df] bg-[#faf9f6] px-4 py-2.5 text-sm">
+                    <input id="searchInput" type="search" placeholder="Search by name or phone" class="w-full input-farm px-4 py-2.5 text-sm md:max-w-xs" />
+                    <select id="statusFilter" class="input-farm px-4 py-2.5 text-sm">
                         <option value="all">All statuses</option>
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
@@ -50,39 +242,193 @@
                     </select>
                 </div>
 
-                <div id="dashboardAlert" class="mt-4 hidden rounded-2xl bg-amber-50 p-4 text-sm text-amber-900"></div>
+                <div id="dashboardAlert" class="mt-4 hidden rounded-xl bg-amber-50 p-4 text-sm text-amber-900 border border-amber-200"></div>
 
                 <div class="mt-6 overflow-x-auto">
-                    <table class="min-w-full divide-y divide-[#edf2ea] text-sm">
-                        <thead class="bg-[#f7f3ec] text-left text-[#3e5941]">
+                    <table class="min-w-full divide-y divide-farm-brown/15 text-sm">
+                        <thead class="bg-farm-cream text-left text-farm-green font-slab">
                             <tr>
-                                <th class="px-3 py-3">Lead</th>
-                                <th class="px-3 py-3">Phone</th>
-                                <th class="px-3 py-3">Date</th>
-                                <th class="px-3 py-3">Slot</th>
-                                <th class="px-3 py-3">Status</th>
-                                <th class="px-3 py-3">Actions</th>
+                                <th class="px-3 py-3 font-semibold">Lead</th>
+                                <th class="px-3 py-3 font-semibold">Phone</th>
+                                <th class="px-3 py-3 font-semibold">Date</th>
+                                <th class="px-3 py-3 font-semibold">Slot</th>
+                                <th class="px-3 py-3 font-semibold">Status</th>
+                                <th class="px-3 py-3 font-semibold">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="bookingTableBody" class="divide-y divide-[#edf2ea]"></tbody>
+                        <tbody id="bookingTableBody" class="divide-y divide-farm-brown/10"></tbody>
                     </table>
                 </div>
             </article>
 
-            <aside class="rounded-[28px] bg-white p-6 shadow-soft">
-                <p class="text-xs uppercase tracking-[0.3em] text-[#3f6b3a]">Quick actions</p>
-                <h3 class="mt-2 text-xl font-semibold">Manage the booking flow</h3>
-                <ul class="mt-4 space-y-3 text-sm text-[#4b5b4d]">
-                    <li class="rounded-2xl bg-[#f7f3ec] p-4">Confirm pending visits, update status, and add admin notes in one click.</li>
-                    <li class="rounded-2xl bg-[#f7f3ec] p-4">Review phone, slot and attendee count for each booking submission.</li>
-                    <li class="rounded-2xl bg-[#f7f3ec] p-4">Use this panel as the lightweight CMS for farm visit management.</li>
+            <aside class="cardboard-card rounded-2xl p-6">
+                <p class="text-xs uppercase tracking-[0.3em] text-farm-green font-bold font-slab">Quick actions</p>
+                <h3 class="mt-2 text-xl font-semibold font-slab">Manage the booking flow</h3>
+                <ul class="mt-4 space-y-3 text-sm text-farm-soil/50">
+                    <li class="rounded-xl bg-farm-cream p-4 border border-farm-brown/10">Confirm pending visits, update status, and add admin notes in one click.</li>
+                    <li class="rounded-xl bg-farm-cream p-4 border border-farm-brown/10">Review phone, slot and attendee count for each booking submission.</li>
+                    <li class="rounded-xl bg-farm-cream p-4 border border-farm-brown/10">Use this panel as the lightweight CMS for farm visit management.</li>
                 </ul>
-                <div id="saveMessage" class="mt-6 rounded-2xl bg-[#edf5e2] p-4 text-sm text-[#345236]"></div>
+                <div id="saveMessage" class="mt-6 rounded-xl bg-farm-green/10 p-4 text-sm text-farm-green border border-farm-green/20 font-slab"></div>
             </aside>
+        </div>
+        </section>
+
+        <!-- ═══════════════ TAB: DATE SETUP ═══════════════ -->
+        <section id="tabDates" class="cms-tab-panel hidden">
+        <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
+            <article class="cardboard-card rounded-2xl p-6">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-farm-green font-bold font-slab">Availability</p>
+                        <h2 class="mt-2 text-2xl font-semibold font-slab">Available Dates</h2>
+                        <p class="mt-1 text-sm text-farm-soil/50">Click dates to select, then confirm to enable/disable.</p>
+                    </div>
+                    <span id="adStats" class="text-sm text-farm-soil/50 font-slab"></span>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <button id="adPrev" class="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-farm-brown/15 hover:bg-farm-green/10 transition">
+                        <svg class="w-4 h-4 text-farm-green" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <p id="adMonthYear" class="text-base font-semibold text-farm-soil font-slab"></p>
+                    <button id="adNext" class="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-farm-brown/15 hover:bg-farm-green/10 transition">
+                        <svg class="w-4 h-4 text-farm-green" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                </div>
+
+                <div class="mt-4 grid grid-cols-7 gap-1 text-center">
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Mon</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Tue</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Wed</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Thu</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Fri</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Sat</span>
+                    <span class="text-xs font-semibold text-farm-soil/40 uppercase py-1 font-slab">Sun</span>
+                </div>
+                <div id="adGrid" class="grid grid-cols-7 gap-1"></div>
+
+                <div class="mt-4 flex items-center gap-4 pt-3 border-t-2 border-farm-brown/10">
+                    <span class="flex items-center gap-1.5 text-xs text-farm-soil/50 font-slab"><span class="w-2.5 h-2.5 rounded-full bg-farm-green"></span>Available</span>
+                    <span class="flex items-center gap-1.5 text-xs text-farm-soil/50 font-slab"><span class="w-2.5 h-2.5 rounded-full bg-farm-cream border-2 border-farm-brown/15"></span>Unavailable</span>
+                    <span class="flex items-center gap-1.5 text-xs text-farm-soil/50 font-slab"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>Selected</span>
+                </div>
+
+                <div id="adSelectedBar" class="hidden mt-4 flex items-center justify-between rounded-xl bg-amber-50 border-2 border-amber-200 p-3">
+                    <span id="adSelectedCount" class="text-sm text-amber-800 font-slab"></span>
+                    <div class="flex gap-2">
+                        <button id="adEnableSelected" class="btn-farm px-4 py-1.5 text-xs">Enable</button>
+                        <button id="adDisableSelected" class="rounded-xl border-2 border-rose-200 bg-white px-4 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition font-slab">Disable</button>
+                        <button id="adClearSelection" class="btn-kraft px-3 py-1.5 text-xs">Clear</button>
+                    </div>
+                </div>
+
+                <div id="adCalendarMsg" class="hidden mt-3 text-sm text-farm-green font-slab"></div>
+            </article>
+
+            <aside class="cardboard-card rounded-2xl p-6">
+                <p class="text-xs uppercase tracking-[0.3em] text-farm-green font-bold font-slab">Quick Setup</p>
+                <h3 class="mt-2 text-xl font-semibold font-slab">Bulk enable</h3>
+                <p class="mt-1 text-sm text-farm-soil/50">Enable specific days across a date range.</p>
+
+                <div class="mt-4">
+                    <p class="text-xs font-semibold text-farm-soil/50 uppercase tracking-wider mb-2 font-slab">Days of week</p>
+                    <div class="grid grid-cols-4 gap-2" id="dowCheckboxes">
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="1" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Mon
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="2" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Tue
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="3" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Wed
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="4" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Thu
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="5" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Fri
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="6" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Sat
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-farm-soil/60 cursor-pointer font-slab">
+                            <input type="checkbox" value="0" class="rounded border-farm-brown/25 text-farm-green focus:ring-farm-green" /> Sun
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <label class="block">
+                        <span class="text-xs font-semibold text-farm-soil/50 uppercase tracking-wider font-slab">From</span>
+                        <input id="adRangeFrom" type="date" class="mt-1.5 w-full input-farm px-3 py-2.5 text-sm" />
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-semibold text-farm-soil/50 uppercase tracking-wider font-slab">To</span>
+                        <input id="adRangeTo" type="date" class="mt-1.5 w-full input-farm px-3 py-2.5 text-sm" />
+                    </label>
+                </div>
+
+                <button id="adGenerate" class="mt-4 w-full btn-farm px-4 py-3 text-sm">Enable selected days</button>
+
+                <div id="adRangeMsg" class="mt-3 text-sm text-farm-green hidden font-slab"></div>
+
+                <div class="mt-6 pt-4 border-t-2 border-farm-brown/10">
+                    <p class="text-xs font-semibold text-farm-soil/50 uppercase tracking-wider mb-2 font-slab">Presets</p>
+                    <div class="space-y-2">
+                        <button data-preset="weekdays" class="w-full btn-kraft px-3 py-2 text-sm text-left">Enable weekdays (Mon-Fri)</button>
+                        <button data-preset="weekends" class="w-full btn-kraft px-3 py-2 text-sm text-left">Enable weekends (Sat-Sun)</button>
+                        <button data-preset="clear" class="w-full rounded-xl border-2 border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 hover:bg-rose-100 transition text-left font-slab">Disable all dates this month</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
         </section>
     </main>
 
     <script>
+        // === Tab switching ===
+        const cmsTabs = document.querySelectorAll('.cms-tab');
+        const tabPanels = {
+            submissions: document.getElementById('tabSubmissions'),
+            dates: document.getElementById('tabDates'),
+        };
+        const cmsPageTitle = document.getElementById('cmsPageTitle');
+        const cmsPageDesc = document.getElementById('cmsPageDesc');
+        const TAB_META = {
+            submissions: {
+                title: 'Submissions',
+                desc: 'Review submitted farm visit bookings, update status, and manage follow-up notes from one place.'
+            },
+            dates: {
+                title: 'Date Setup',
+                desc: 'Configure which dates are available for bookings. Toggle individual dates or enable days of the week in bulk.'
+            }
+        };
+
+        function switchTab(name) {
+            cmsTabs.forEach(function (t) {
+                if (t.dataset.tab === name) t.classList.add('is-active');
+                else t.classList.remove('is-active');
+            });
+            for (var k in tabPanels) {
+                if (!tabPanels[k]) continue;
+                tabPanels[k].classList.toggle('hidden', k !== name);
+            }
+            if (TAB_META[name]) {
+                if (cmsPageTitle) cmsPageTitle.textContent = TAB_META[name].title;
+                if (cmsPageDesc) cmsPageDesc.textContent = TAB_META[name].desc;
+            }
+            // Update URL hash so the tab is shareable
+            try { history.replaceState(null, '', '#' + name); } catch (e) {}
+        }
+        cmsTabs.forEach(function (t) {
+            t.addEventListener('click', function () { switchTab(t.dataset.tab); });
+        });
+        // Open tab from hash on load
+        var initialTab = (window.location.hash || '#submissions').replace('#', '');
+        if (tabPanels[initialTab]) switchTab(initialTab);
+
         const bookingTableBody = document.getElementById('bookingTableBody');
         const dashboardAlert = document.getElementById('dashboardAlert');
         const saveMessage = document.getElementById('saveMessage');
@@ -102,26 +448,26 @@
             return `
                 <tr class="align-top">
                     <td class="px-3 py-4">
-                        <strong>${booking.lead_name || 'Unknown'}</strong><br />
-                        <span class="text-xs text-[#5b6b5c]">Guests: ${booking.attendee_count || 0}</span>
+                        <strong class="font-slab">${booking.lead_name || 'Unknown'}</strong><br />
+                        <span class="text-xs text-farm-soil/40">Guests: ${booking.attendee_count || 0}</span>
                     </td>
-                    <td class="px-3 py-4 text-[#4b5b4d]">${booking.phone || '—'}</td>
-                    <td class="px-3 py-4 text-[#4b5b4d]">${booking.visit_date || '—'}</td>
-                    <td class="px-3 py-4 text-[#4b5b4d]">${booking.slot_label || '—'}</td>
+                    <td class="px-3 py-4 text-farm-soil/60">${booking.phone || '—'}</td>
+                    <td class="px-3 py-4 text-farm-soil/60">${booking.visit_date || '—'}</td>
+                    <td class="px-3 py-4 text-farm-soil/60">${booking.slot_label || '—'}</td>
                     <td class="px-3 py-4">
                         <div class="space-y-2">
-                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClass(booking.status)}">${(booking.status || 'pending').toUpperCase()}</span>
-                            <select data-id="${booking.id}" class="statusSelect w-full rounded-xl border border-[#dfe7df] bg-[#faf9f6] px-3 py-2 text-sm">
+                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold font-slab ${badgeClass(booking.status)}">${(booking.status || 'pending').toUpperCase()}</span>
+                            <select data-id="${booking.id}" class="statusSelect w-full input-farm px-3 py-2 text-sm">
                                 ${['pending','confirmed','completed','cancelled'].map(status => `<option value="${status}" ${booking.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase()+status.slice(1)}</option>`).join('')}
                             </select>
-                            <textarea data-note="${booking.id}" rows="2" class="w-full rounded-xl border border-[#dfe7df] bg-[#faf9f6] px-3 py-2 text-sm" placeholder="Admin note">${booking.admin_note || ''}</textarea>
+                            <textarea data-note="${booking.id}" rows="2" class="w-full input-farm px-3 py-2 text-sm" placeholder="Admin note">${booking.admin_note || ''}</textarea>
                             <div class="flex gap-2">
-                                <button data-save="${booking.id}" class="rounded-full bg-[#3f6b3a] px-3 py-2 text-xs font-semibold text-white">Save</button>
-                                <button data-delete="${booking.id}" class="rounded-full bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700">Delete</button>
+                                <button data-save="${booking.id}" class="btn-farm px-3 py-2 text-xs">Save</button>
+                                <button data-delete="${booking.id}" class="rounded-xl bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700 font-slab">Delete</button>
                             </div>
                         </div>
                     </td>
-                    <td class="px-3 py-4 text-[#4b5b4d] text-sm">${booking.feedback_message || 'No feedback note yet.'}</td>
+                    <td class="px-3 py-4 text-farm-soil/50 text-sm">${booking.feedback_message || 'No feedback note yet.'}</td>
                 </tr>`;
         }
 
@@ -196,6 +542,213 @@
         });
 
         loadBookings();
+
+        // ═══════════════ AVAILABLE DATES CALENDAR ═══════════════
+        const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        let adYear, adMonth, adAvailable = new Set(), adSelected = new Set();
+
+        async function loadAvailableDates() {
+            const from = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-01';
+            const lastDay = new Date(adYear, adMonth + 1, 0).getDate();
+            const to = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-' + String(lastDay).padStart(2, '0');
+            try {
+                const r = await fetch('/api/available-dates?from=' + from + '&to=' + to);
+                const res = await r.json();
+                if (res.ok && Array.isArray(res.body)) {
+                    adAvailable = new Set(res.body.filter(d => d.is_available !== false).map(d => d.visit_date));
+                } else {
+                    adAvailable = new Set();
+                }
+            } catch {
+                adAvailable = new Set();
+            }
+            adSelected.clear();
+            renderAdCalendar();
+            updateAdSelectionBar();
+        }
+
+        function renderAdCalendar() {
+            document.getElementById('adMonthYear').textContent = MONTH_NAMES[adMonth] + ' ' + adYear;
+            const grid = document.getElementById('adGrid');
+            grid.innerHTML = '';
+            const firstDay = new Date(adYear, adMonth, 1).getDay();
+            const daysInMonth = new Date(adYear, adMonth + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const startOffset = (firstDay + 6) % 7;
+            let availableCount = 0;
+
+            for (let i = 0; i < startOffset; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'aspect-square rounded-lg';
+                grid.appendChild(empty);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                const cellDate = new Date(adYear, adMonth, day);
+                cellDate.setHours(0, 0, 0, 0);
+                const isPast = cellDate < today;
+                const isAvailable = adAvailable.has(dateStr);
+                const isSelected = adSelected.has(dateStr);
+
+                if (isAvailable) availableCount++;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = day;
+                btn.className = 'aspect-square rounded-lg text-xs font-semibold flex items-center justify-center transition cursor-pointer font-slab';
+
+                if (isPast) {
+                    btn.className += ' bg-farm-cream/50 text-farm-soil/20 cursor-not-allowed';
+                } else if (isSelected) {
+                    btn.className += ' bg-amber-400 text-white ring-2 ring-amber-300 shadow-sm';
+                } else if (isAvailable) {
+                    btn.className += ' bg-farm-green text-farm-cream hover:bg-farm-deep';
+                } else {
+                    btn.className += ' bg-farm-cream text-farm-soil/30 hover:bg-farm-green/10 border border-farm-brown/10';
+                }
+
+                if (!isPast) {
+                    btn.addEventListener('click', () => {
+                        if (adSelected.has(dateStr)) {
+                            adSelected.delete(dateStr);
+                        } else {
+                            adSelected.add(dateStr);
+                        }
+                        renderAdCalendar();
+                        updateAdSelectionBar();
+                    });
+                }
+
+                grid.appendChild(btn);
+            }
+
+            document.getElementById('adStats').textContent = availableCount + ' date' + (availableCount !== 1 ? 's' : '') + ' available this month';
+        }
+
+        function updateAdSelectionBar() {
+            const bar = document.getElementById('adSelectedBar');
+            const count = adSelected.size;
+            if (count === 0) {
+                bar.classList.add('hidden');
+            } else {
+                bar.classList.remove('hidden');
+                document.getElementById('adSelectedCount').textContent = count + ' date' + (count !== 1 ? 's' : '') + ' selected';
+            }
+        }
+
+        async function applyAdSelection(enable) {
+            const dates = Array.from(adSelected).map(d => ({ visit_date: d, is_available: enable }));
+            try {
+                await fetch('/api/available-dates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bulk: dates })
+                });
+            } catch {}
+            adSelected.clear();
+            loadAvailableDates();
+        }
+
+        document.getElementById('adEnableSelected').addEventListener('click', () => applyAdSelection(true));
+        document.getElementById('adDisableSelected').addEventListener('click', () => applyAdSelection(false));
+        document.getElementById('adClearSelection').addEventListener('click', () => {
+            adSelected.clear();
+            renderAdCalendar();
+            updateAdSelectionBar();
+        });
+
+        document.getElementById('adPrev').addEventListener('click', () => {
+            adMonth--;
+            if (adMonth < 0) { adMonth = 11; adYear--; }
+            loadAvailableDates();
+        });
+
+        document.getElementById('adNext').addEventListener('click', () => {
+            adMonth++;
+            if (adMonth > 11) { adMonth = 0; adYear++; }
+            loadAvailableDates();
+        });
+
+        document.getElementById('adGenerate').addEventListener('click', async () => {
+            const checkboxes = document.querySelectorAll('#dowCheckboxes input:checked');
+            const days = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            const from = document.getElementById('adRangeFrom').value;
+            const to = document.getElementById('adRangeTo').value;
+
+            if (days.length === 0) { alert('Select at least one day of the week.'); return; }
+            if (!from || !to) { alert('Select a date range.'); return; }
+
+            const msg = document.getElementById('adRangeMsg');
+            try {
+                const r = await fetch('/api/available-dates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ generate: { days, from, to, is_available: true } })
+                });
+                const res = await r.json();
+                msg.textContent = res.message || 'Done.';
+                msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                loadAvailableDates();
+            } catch {
+                msg.textContent = 'Error generating dates.';
+                msg.className = 'mt-3 text-sm text-rose-600 font-slab';
+            }
+        });
+
+        document.querySelectorAll('[data-preset]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const preset = btn.getAttribute('data-preset');
+                const lastDay = new Date(adYear, adMonth + 1, 0).getDate();
+                const from = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-01';
+                const to = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-' + String(lastDay).padStart(2, '0');
+                const msg = document.getElementById('adRangeMsg');
+
+                if (preset === 'clear') {
+                    const dates = [];
+                    for (let d = 1; d <= lastDay; d++) {
+                        const dateStr = adYear + '-' + String(adMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                        dates.push({ visit_date: dateStr, is_available: false });
+                    }
+                    try {
+                        await fetch('/api/available-dates', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ bulk: dates })
+                        });
+                        msg.textContent = 'All dates disabled for ' + MONTH_NAMES[adMonth] + '.';
+                        msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                        loadAvailableDates();
+                    } catch {
+                        msg.textContent = 'Error.';
+                        msg.className = 'mt-3 text-sm text-rose-600 font-slab';
+                    }
+                    return;
+                }
+
+                const days = preset === 'weekdays' ? [1, 2, 3, 4, 5] : [6, 0];
+                try {
+                    const r = await fetch('/api/available-dates', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ generate: { days, from, to, is_available: true } })
+                    });
+                    const res = await r.json();
+                    msg.textContent = res.message || 'Done.';
+                    msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                    loadAvailableDates();
+                } catch {
+                    msg.textContent = 'Error.';
+                    msg.className = 'mt-3 text-sm text-rose-600 font-slab';
+                }
+            });
+        });
+
+        const today = new Date();
+        adYear = today.getFullYear();
+        adMonth = today.getMonth();
+        loadAvailableDates();
     </script>
 </body>
 

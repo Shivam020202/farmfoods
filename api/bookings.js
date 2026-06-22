@@ -86,12 +86,16 @@ module.exports = async (req, res) => {
     }
 
     if (method === 'POST') {
-        let input = {};
-        try {
-            const chunks = [];
-            for await (const chunk of req) chunks.push(chunk);
-            input = JSON.parse(Buffer.concat(chunks).toString()) || {};
-        } catch { input = {}; }
+        let input = (req.body && Object.keys(req.body).length > 0) ? req.body : {};
+        if (Object.keys(input).length === 0) {
+            try {
+                const chunks = [];
+                for await (const chunk of req) chunks.push(chunk);
+                if (chunks.length > 0) {
+                    input = JSON.parse(Buffer.concat(chunks).toString()) || {};
+                }
+            } catch { input = {}; }
+        }
 
         const required = ['lead_name', 'phone', 'visit_date', 'slot_label', 'attendee_count'];
         for (const field of required) {
@@ -141,12 +145,16 @@ module.exports = async (req, res) => {
     }
 
     if (method === 'PATCH') {
-        let input = {};
-        try {
-            const chunks = [];
-            for await (const chunk of req) chunks.push(chunk);
-            input = JSON.parse(Buffer.concat(chunks).toString()) || {};
-        } catch { input = {}; }
+        let input = (req.body && Object.keys(req.body).length > 0) ? req.body : {};
+        if (Object.keys(input).length === 0) {
+            try {
+                const chunks = [];
+                for await (const chunk of req) chunks.push(chunk);
+                if (chunks.length > 0) {
+                    input = JSON.parse(Buffer.concat(chunks).toString()) || {};
+                }
+            } catch { input = {}; }
+        }
 
         if (!input.id) {
             return res.status(422).json({ ok: false, message: 'Missing booking id.' });
@@ -177,12 +185,16 @@ module.exports = async (req, res) => {
     }
 
     if (method === 'DELETE') {
-        let input = {};
-        try {
-            const chunks = [];
-            for await (const chunk of req) chunks.push(chunk);
-            input = JSON.parse(Buffer.concat(chunks).toString()) || {};
-        } catch { input = {}; }
+        let input = (req.body && Object.keys(req.body).length > 0) ? req.body : {};
+        if (Object.keys(input).length === 0) {
+            try {
+                const chunks = [];
+                for await (const chunk of req) chunks.push(chunk);
+                if (chunks.length > 0) {
+                    input = JSON.parse(Buffer.concat(chunks).toString()) || {};
+                }
+            } catch { input = {}; }
+        }
 
         if (!input.id) {
             return res.status(422).json({ ok: false, message: 'Missing booking id.' });

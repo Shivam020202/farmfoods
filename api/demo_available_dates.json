@@ -1,0 +1,114 @@
+[
+    {
+        "id": "demo-ad-001",
+        "visit_date": "2026-06-20",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-002",
+        "visit_date": "2026-06-21",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-003",
+        "visit_date": "2026-06-25",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-004",
+        "visit_date": "2026-06-27",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-005",
+        "visit_date": "2026-06-28",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-006",
+        "visit_date": "2026-07-04",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-007",
+        "visit_date": "2026-07-05",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-008",
+        "visit_date": "2026-07-11",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-009",
+        "visit_date": "2026-07-12",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-010",
+        "visit_date": "2026-07-18",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-011",
+        "visit_date": "2026-07-19",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-012",
+        "visit_date": "2026-07-25",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-013",
+        "visit_date": "2026-07-26",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-10T00:00:00Z"
+    },
+    {
+        "id": "demo-ad-15e84f",
+        "visit_date": "2026-06-30",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-22T06:57:34+00:00"
+    },
+    {
+        "id": "demo-ad-15fc9d",
+        "visit_date": "2026-06-29",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-22T08:36:52+00:00"
+    },
+    {
+        "id": "demo-ad-e2ad2d",
+        "visit_date": "2026-06-26",
+        "is_available": true,
+        "max_bookings": 12,
+        "created_at": "2026-06-22T10:16:49+00:00"
+    }
+]
