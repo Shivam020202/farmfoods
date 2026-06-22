@@ -9,9 +9,10 @@ if ($uri !== '/' && file_exists($path) && !is_dir($path)) {
     return false;
 }
 
-// 2) Extensionless /api/* -> /api/*.php
+// 2) Extensionless /api/* -> /api/*.php (local PHP handlers live in api-php/ to avoid
+//    clashing with Vercel serverless .js files in api/)
 if (strpos($uri, '/api/') === 0 && !preg_match('/\.[a-zA-Z0-9]+$/', $uri)) {
-    $candidate = $root . DIRECTORY_SEPARATOR . trim($uri, '/') . '.php';
+    $candidate = $root . DIRECTORY_SEPARATOR . 'api-php' . DIRECTORY_SEPARATOR . basename(trim($uri, '/')) . '.php';
     $candidate = str_replace('\\', '/', $candidate);
     if (file_exists($candidate)) {
         // Let PHP handle it as if it were requested directly

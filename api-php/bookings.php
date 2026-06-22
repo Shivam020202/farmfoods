@@ -12,7 +12,7 @@ function getSupabaseConfig() {
 }
 
 function fallbackPath() {
-    return __DIR__ . '/demo_bookings.json';
+    return __DIR__ . '/../api/demo_bookings.json';
 }
 
 function loadFallback() {

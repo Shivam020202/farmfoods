@@ -1,0 +1,10 @@
+# Local-only files not needed for Vercel deployment
+node_modules/
+.mimocode/
+api-php/
+router.php
+server.js
+package.json
+package-lock.json
+.env
+.env.local
