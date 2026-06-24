@@ -51,8 +51,22 @@ async function supabaseRequest(method, apiPath, payload = {}, query = {}) {
     }
 
     let url = cfg.url.replace(/\/+$/, '') + '/rest/v1/' + apiPath.replace(/^\/+/, '');
-    if (Object.keys(query).length > 0) {
-        url += '?' + new URLSearchParams(query).toString();
+
+    // Build query string. PostgREST does NOT support `and(gte.X,lte.Y)` in a single
+    // param value — you must repeat the column param. So support query values that
+    // are arrays, emitting repeated keys. URLSearchParams natively handles arrays.
+    const queryKeys = Object.keys(query);
+    if (queryKeys.length > 0) {
+        const sp = new URLSearchParams();
+        for (const k of queryKeys) {
+            const v = query[k];
+            if (Array.isArray(v)) {
+                for (const item of v) sp.append(k, item);
+            } else {
+                sp.append(k, v);
+            }
+        }
+        url += '?' + sp.toString();
     }
 
     const headers = {
@@ -93,13 +107,11 @@ module.exports = async (req, res) => {
         const to = url.searchParams.get('to');
 
         const query = { select: 'visit_date,is_available,max_bookings', order: 'visit_date.asc' };
-        if (from && to) {
-            query.visit_date = 'and(gte.' + from + ',lte.' + to + ')';
-        } else if (from) {
-            query.visit_date = 'gte.' + from;
-        } else if (to) {
-            query.visit_date = 'lte.' + to;
-        }
+        // PostgREST date range: repeat visit_date as multiple params
+        const rangeFilters = [];
+        if (from) rangeFilters.push('gte.' + from);
+        if (to) rangeFilters.push('lte.' + to);
+        if (rangeFilters.length > 0) query.visit_date = rangeFilters;
 
         const result = await supabaseRequest('GET', 'farm_available_dates', {}, query);
 
