@@ -19,18 +19,27 @@ function fallbackBookingsPath() {
 }
 
 function loadFallbackBookings() {
-    const filePath = fallbackBookingsPath();
-    if (!fs.existsSync(filePath)) return [];
     try {
+        const filePath = fallbackBookingsPath();
+        if (!fs.existsSync(filePath)) return [];
         const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         return Array.isArray(data) ? data : [];
-    } catch {
+    } catch (err) {
+        console.warn('[bookings] loadFallbackBookings skipped:', err.code || err.message);
         return [];
     }
 }
 
 function saveFallbackBookings(bookings) {
-    fs.writeFileSync(fallbackBookingsPath(), JSON.stringify(bookings, null, 2));
+    // On read-only filesystems (e.g. Vercel serverless) this will throw EROFS.
+    // Treat it as a soft failure — Supabase is the source of truth in production.
+    try {
+        fs.writeFileSync(fallbackBookingsPath(), JSON.stringify(bookings, null, 2));
+        return true;
+    } catch (err) {
+        console.warn('[bookings] saveFallbackBookings skipped:', err.code || err.message);
+        return false;
+    }
 }
 
 async function supabaseRequest(method, apiPath, payload = {}, query = {}) {
@@ -136,13 +145,21 @@ module.exports = async (req, res) => {
             };
             bookings.push(booking);
             saveFallbackBookings(bookings);
-            return res.status(200).json({ ok: true, message: 'Booking created successfully.', booking, fallback: true });
+            return res.status(200).json({
+                ok: true,
+                message: 'Booking created successfully.',
+                booking,
+                fallback: true,
+                persisted: false,
+                warning: 'Booking stored locally only. It will not persist between requests. Connect a working Supabase project to enable real persistence.'
+            });
         }
 
         return res.status(200).json({
             ok: true,
             message: 'Booking created successfully.',
             booking: (result.body && result.body[0]) || payload,
+            persisted: true,
         });
     }
 

@@ -20,18 +20,28 @@ function fallbackPath() {
 }
 
 function loadFallback() {
-    const filePath = fallbackPath();
-    if (!fs.existsSync(filePath)) return [];
     try {
+        const filePath = fallbackPath();
+        if (!fs.existsSync(filePath)) return [];
         const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         return Array.isArray(data) ? data : [];
-    } catch {
+    } catch (err) {
+        console.warn('[available-dates] loadFallback skipped:', err.code || err.message);
         return [];
     }
 }
 
 function saveFallback(dates) {
-    fs.writeFileSync(fallbackPath(), JSON.stringify(dates, null, 2));
+    // On read-only filesystems (e.g. Vercel serverless) this will throw EROFS.
+    // Treat it as a soft failure so the API still returns success — Supabase
+    // is the source of truth in production, and local dev still works.
+    try {
+        fs.writeFileSync(fallbackPath(), JSON.stringify(dates, null, 2));
+        return true;
+    } catch (err) {
+        console.warn('[available-dates] saveFallback skipped:', err.code || err.message);
+        return false;
+    }
 }
 
 async function supabaseRequest(method, apiPath, payload = {}, query = {}) {
@@ -162,6 +172,7 @@ module.exports = async (req, res) => {
         // Bulk update
         if (input.bulk && Array.isArray(input.bulk)) {
             const results = [];
+            let supabaseOk = true;
             for (const entry of input.bulk) {
                 if (!entry.visit_date) continue;
                 const payload = {
@@ -172,14 +183,16 @@ module.exports = async (req, res) => {
 
                 const existing = await supabaseRequest('GET', 'farm_available_dates', {}, { select: 'id', visit_date: 'eq.' + entry.visit_date });
                 if (existing.ok && Array.isArray(existing.body) && existing.body.length > 0) {
-                    await supabaseRequest('PATCH', 'farm_available_dates?visit_date=eq.' + entry.visit_date, { is_available: payload.is_available });
+                    const r = await supabaseRequest('PATCH', 'farm_available_dates?visit_date=eq.' + entry.visit_date, { is_available: payload.is_available });
+                    if (!r.ok) supabaseOk = false;
                 } else {
-                    await supabaseRequest('POST', 'farm_available_dates', payload);
+                    const r = await supabaseRequest('POST', 'farm_available_dates', payload);
+                    if (!r.ok) supabaseOk = false;
                 }
                 results.push(payload);
             }
 
-            // Always also write to fallback so the local dev works
+            // Also write to fallback (local dev only; silently skipped on read-only fs)
             const fallback = loadFallback();
             for (const entry of input.bulk) {
                 if (!entry.visit_date) continue;
@@ -193,7 +206,13 @@ module.exports = async (req, res) => {
             }
             saveFallback(fallback);
 
-            return res.status(200).json({ ok: true, message: results.length + ' dates updated.', body: results });
+            return res.status(200).json({
+                ok: true,
+                message: results.length + ' dates updated.',
+                body: results,
+                persisted: supabaseOk,
+                warning: supabaseOk ? null : 'Changes will not persist between requests. Connect a working Supabase project to enable real persistence.'
+            });
         }
 
         // Single toggle
@@ -215,7 +234,7 @@ module.exports = async (req, res) => {
             result = await supabaseRequest('POST', 'farm_available_dates', singlePayload);
         }
 
-        // Always also write to fallback so local dev works
+        // Also write to fallback (local dev only; silently skipped on read-only fs)
         const fallback = loadFallback();
         const idx = fallback.findIndex(e => e.visit_date === input.visit_date);
         if (idx >= 0) {
@@ -225,7 +244,13 @@ module.exports = async (req, res) => {
         }
         saveFallback(fallback);
 
-        return res.status(200).json({ ok: true, message: 'Date toggled.', body: singlePayload });
+        return res.status(200).json({
+            ok: true,
+            message: 'Date toggled.',
+            body: singlePayload,
+            persisted: !!result.ok,
+            warning: result.ok ? null : 'Changes will not persist between requests. Connect a working Supabase project to enable real persistence.'
+        });
     }
 
     return res.status(405).json({ ok: false, message: 'Method not allowed.' });

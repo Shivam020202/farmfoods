@@ -509,25 +509,37 @@
         async function updateBooking(bookingId) {
             const status = document.querySelector(`select[data-id="${bookingId}"]`).value;
             const admin_note = document.querySelector(`textarea[data-note="${bookingId}"]`).value;
-            const response = await fetch('/api/bookings', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: bookingId, status, admin_note })
-            });
-            const result = await response.json();
-            saveMessage.textContent = result.ok ? 'Booking updated successfully.' : (result.message || 'Update failed.');
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: bookingId, status, admin_note })
+                });
+                const result = await response.json();
+                saveMessage.textContent = (result.ok ? 'Booking updated successfully.' : (result.message || 'Update failed.')) + (result.warning ? '  ⚠ ' + result.warning : '');
+                saveMessage.className = 'text-sm mt-3 font-slab ' + (result.warning ? 'text-amber-700' : 'text-farm-green');
+            } catch (err) {
+                saveMessage.textContent = 'Could not reach the server.';
+                saveMessage.className = 'text-sm mt-3 font-slab text-rose-600';
+            }
             loadBookings();
         }
 
         async function deleteBooking(bookingId) {
             if (!confirm('Delete this booking?')) return;
-            const response = await fetch('/api/bookings', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: bookingId })
-            });
-            const result = await response.json();
-            saveMessage.textContent = result.ok ? 'Booking deleted.' : (result.message || 'Delete failed.');
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: bookingId })
+                });
+                const result = await response.json();
+                saveMessage.textContent = (result.ok ? 'Booking deleted.' : (result.message || 'Delete failed.')) + (result.warning ? '  ⚠ ' + result.warning : '');
+                saveMessage.className = 'text-sm mt-3 font-slab ' + (result.warning ? 'text-amber-700' : 'text-farm-green');
+            } catch (err) {
+                saveMessage.textContent = 'Could not reach the server.';
+                saveMessage.className = 'text-sm mt-3 font-slab text-rose-600';
+            }
             loadBookings();
         }
 
@@ -641,14 +653,42 @@
         async function applyAdSelection(enable) {
             const dates = Array.from(adSelected).map(d => ({ visit_date: d, is_available: enable }));
             try {
-                await fetch('/api/available-dates', {
+                const resp = await fetch('/api/available-dates', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ bulk: dates })
                 });
-            } catch {}
+                let data = null;
+                try { data = await resp.json(); } catch {}
+                if (data && data.warning) {
+                    showCmsToast(data.warning, 'warn', 8000);
+                } else {
+                    showCmsToast(dates.length + ' date' + (dates.length === 1 ? '' : 's') + ' ' + (enable ? 'enabled' : 'disabled') + '.', 'ok');
+                }
+            } catch (err) {
+                showCmsToast('Could not reach the server. Please retry.', 'err');
+            }
             adSelected.clear();
             loadAvailableDates();
+        }
+
+        function showCmsToast(msg, kind, ttl) {
+            let el = document.getElementById('cmsToast');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'cmsToast';
+                el.className = 'fixed top-5 right-5 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-slab max-w-sm';
+                document.body.appendChild(el);
+            }
+            el.className = 'fixed top-5 right-5 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-slab max-w-sm ' + (
+                kind === 'warn' ? 'bg-amber-100 text-amber-900 border-2 border-amber-300'
+                : kind === 'err' ? 'bg-red-100 text-red-900 border-2 border-red-300'
+                : 'bg-farm-green text-white border-2 border-farm-deep'
+            );
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            clearTimeout(showCmsToast._t);
+            showCmsToast._t = setTimeout(() => el.classList.add('hidden'), ttl || 4000);
         }
 
         document.getElementById('adEnableSelected').addEventListener('click', () => applyAdSelection(true));
@@ -688,8 +728,8 @@
                     body: JSON.stringify({ generate: { days, from, to, is_available: true } })
                 });
                 const res = await r.json();
-                msg.textContent = res.message || 'Done.';
-                msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                msg.textContent = (res.message || 'Done.') + (res.warning ? '  ⚠ ' + res.warning : '');
+                msg.className = 'mt-3 text-sm ' + (res.warning ? 'text-amber-700' : 'text-farm-green') + ' font-slab';
                 loadAvailableDates();
             } catch {
                 msg.textContent = 'Error generating dates.';
@@ -712,13 +752,14 @@
                         dates.push({ visit_date: dateStr, is_available: false });
                     }
                     try {
-                        await fetch('/api/available-dates', {
+                        const r = await fetch('/api/available-dates', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ bulk: dates })
                         });
-                        msg.textContent = 'All dates disabled for ' + MONTH_NAMES[adMonth] + '.';
-                        msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                        const res = await r.json();
+                        msg.textContent = 'All dates disabled for ' + MONTH_NAMES[adMonth] + '.' + (res.warning ? '  ⚠ ' + res.warning : '');
+                        msg.className = 'mt-3 text-sm ' + (res.warning ? 'text-amber-700' : 'text-farm-green') + ' font-slab';
                         loadAvailableDates();
                     } catch {
                         msg.textContent = 'Error.';
@@ -735,8 +776,8 @@
                         body: JSON.stringify({ generate: { days, from, to, is_available: true } })
                     });
                     const res = await r.json();
-                    msg.textContent = res.message || 'Done.';
-                    msg.className = 'mt-3 text-sm text-farm-green font-slab';
+                    msg.textContent = (res.message || 'Done.') + (res.warning ? '  ⚠ ' + res.warning : '');
+                    msg.className = 'mt-3 text-sm ' + (res.warning ? 'text-amber-700' : 'text-farm-green') + ' font-slab';
                     loadAvailableDates();
                 } catch {
                     msg.textContent = 'Error.';
