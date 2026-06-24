@@ -2,8 +2,14 @@ const fs = require('fs');
 const path = require('path');
 
 function getSupabaseConfig() {
+    let url = process.env.SUPABASE_URL || '';
+    // Supabase REST API lives at https://<ref>.supabase.co — strip pooler/port/db parts
+    // If the user pasted a Postgres connection string, it can't be used for PostgREST.
+    if (url && !url.includes('supabase.co') && !url.includes('/rest/v1')) {
+        url = '';
+    }
     return {
-        url: process.env.SUPABASE_URL || '',
+        url,
         anonKey: process.env.SUPABASE_ANON_KEY || '',
         serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     };
@@ -87,18 +93,16 @@ module.exports = async (req, res) => {
 
         const result = await supabaseRequest('GET', 'farm_available_dates', {}, query);
 
-        if (!result.ok && result.fallback) {
-            let dates = loadFallback();
-            if (from) dates = dates.filter(d => d.visit_date >= from);
-            if (to) dates = dates.filter(d => d.visit_date <= to);
-            return res.status(200).json({ ok: true, body: dates });
-        }
-
         if (result.ok && Array.isArray(result.body)) {
             return res.status(200).json({ ok: true, body: result.body });
         }
 
-        return res.status(result.status || 500).json(result);
+        // Supabase failed (not configured, wrong URL, or 4xx/5xx) — fall back to demo JSON
+        // so the UI keeps working even before the project is fully wired to Supabase.
+        let dates = loadFallback();
+        if (from) dates = dates.filter(d => d.visit_date >= from);
+        if (to) dates = dates.filter(d => d.visit_date <= to);
+        return res.status(200).json({ ok: true, body: dates, fallback: true });
     }
 
     // POST — toggle single date, bulk update, or generate
@@ -138,7 +142,7 @@ module.exports = async (req, res) => {
             }
 
             const result = await supabaseRequest('POST', 'farm_available_dates', datesToInsert);
-            if (!result.ok && result.fallback) {
+            if (!result.ok) {
                 const existing = loadFallback();
                 for (const entry of datesToInsert) {
                     const idx = existing.findIndex(e => e.visit_date === entry.visit_date);
@@ -149,7 +153,7 @@ module.exports = async (req, res) => {
                     }
                 }
                 saveFallback(existing);
-                return res.status(200).json({ ok: true, message: datesToInsert.length + ' dates generated.', body: datesToInsert });
+                return res.status(200).json({ ok: true, message: datesToInsert.length + ' dates generated.', body: datesToInsert, fallback: true });
             }
 
             return res.status(200).json({ ok: true, message: datesToInsert.length + ' dates generated.', body: result.body || datesToInsert });

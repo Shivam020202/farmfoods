@@ -1703,7 +1703,8 @@
 
         // === Reusable DOB calendar popup ===
         var dobCalState = { year: 0, month: 0, targetInput: null, today: null };
-        var dobCalEl = document.getElementById('dobCalendar');
+        function getDobCalEl() { return document.getElementById('dobCalendar'); }
+        var dobCalEl = getDobCalEl();
         var MONTH_NAMES_DOB = MONTH_NAMES;
 
         function pad2(n) { return String(n).padStart(2, '0'); }
@@ -1721,8 +1722,10 @@
 
         function renderDobCal() {
             var title = document.getElementById('dobCalMonthYear');
+            if (!title) return;
             title.textContent = MONTH_NAMES_DOB[dobCalState.month] + ' ' + dobCalState.year;
             var grid = document.getElementById('dobCalGrid');
+            if (!grid) return;
             grid.innerHTML = '';
             var first = new Date(dobCalState.year, dobCalState.month, 1).getDay();
             var off = (first + 6) % 7; // Monday-based
@@ -1778,6 +1781,8 @@
         function openDobCalendar(container) {
             var textInput = container.querySelector('[data-field="dob"]');
             if (!textInput) return;
+            dobCalEl = dobCalEl || getDobCalEl();
+            if (!dobCalEl) return;
             dobCalState.targetInput = textInput;
             dobCalState.today = new Date();
             dobCalState.today.setHours(0, 0, 0, 0);
@@ -1799,6 +1804,9 @@
         }
 
         function positionDobCalendar(container) {
+            // Re-resolve in case the script ran before the popup was in the DOM
+            dobCalEl = dobCalEl || getDobCalEl();
+            if (!dobCalEl) return;
             // Position below the field; flip above if no room
             var rect = container.getBoundingClientRect();
             var popupH = 320; // estimated
@@ -1821,32 +1829,45 @@
         }
 
         function closeDobCalendar() {
-            dobCalEl.classList.add('hidden');
+            dobCalEl = dobCalEl || getDobCalEl();
+            if (dobCalEl) dobCalEl.classList.add('hidden');
             dobCalState.targetInput = null;
             document.body.style.overflow = '';
         }
 
-        document.getElementById('dobCalPrev').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); dobCalState.month--; if (dobCalState.month < 0) { dobCalState.month = 11; dobCalState.year--; } renderDobCal(); });
-        document.getElementById('dobCalNext').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); dobCalState.month++; if (dobCalState.month > 11) { dobCalState.month = 0; dobCalState.year++; } renderDobCal(); });
-        document.getElementById('dobCalToday').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var t = dobCalState.today; dobCalState.year = t.getFullYear(); dobCalState.month = t.getMonth(); renderDobCal(); });
+        function attachDobCalListeners() {
+            var prev = document.getElementById('dobCalPrev');
+            var next = document.getElementById('dobCalNext');
+            var todayBtn = document.getElementById('dobCalToday');
+            if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); dobCalState.month--; if (dobCalState.month < 0) { dobCalState.month = 11; dobCalState.year--; } renderDobCal(); });
+            if (next) next.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); dobCalState.month++; if (dobCalState.month > 11) { dobCalState.month = 0; dobCalState.year++; } renderDobCal(); });
+            if (todayBtn) todayBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var t = dobCalState.today; dobCalState.year = t.getFullYear(); dobCalState.month = t.getMonth(); renderDobCal(); });
+        }
+        attachDobCalListeners();
+        // Also try again after DOM is ready, in case the popup hadn't been parsed yet
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () { dobCalEl = getDobCalEl(); attachDobCalListeners(); });
+        }
 
         // Close on outside click / outside touch
         document.addEventListener('click', function (e) {
-            if (dobCalEl.classList.contains('hidden')) return;
+            dobCalEl = dobCalEl || getDobCalEl();
+            if (!dobCalEl || dobCalEl.classList.contains('hidden')) return;
             if (dobCalEl.contains(e.target)) return;
             if (e.target.closest && e.target.closest('.dob-calendar-btn')) return;
             closeDobCalendar();
         });
         document.addEventListener('touchstart', function (e) {
-            if (dobCalEl.classList.contains('hidden')) return;
+            dobCalEl = dobCalEl || getDobCalEl();
+            if (!dobCalEl || dobCalEl.classList.contains('hidden')) return;
             if (dobCalEl.contains(e.target)) return;
             if (e.target.closest && e.target.closest('.dob-calendar-btn')) return;
             closeDobCalendar();
         }, { passive: true });
 
         // Close on scroll/resize
-        window.addEventListener('scroll', function () { if (!dobCalEl.classList.contains('hidden')) closeDobCalendar(); }, true);
-        window.addEventListener('resize', function () { if (!dobCalEl.classList.contains('hidden')) closeDobCalendar(); });
+        window.addEventListener('scroll', function () { dobCalEl = dobCalEl || getDobCalEl(); if (dobCalEl && !dobCalEl.classList.contains('hidden')) closeDobCalendar(); }, true);
+        window.addEventListener('resize', function () { dobCalEl = dobCalEl || getDobCalEl(); if (dobCalEl && !dobCalEl.classList.contains('hidden')) closeDobCalendar(); });
 
         // Calendar (visit date) — add touch handlers and ensure taps work on mobile
         // The existing onclick handlers work, but tap-to-pick responsiveness can be inconsistent on iOS.
@@ -1874,7 +1895,28 @@
                 inp.value = raw.slice(0, 2) + '-' + raw.slice(2, 4) + '-' + raw.slice(4);
             }
         });
-</script>
+
+        // DOB field — tap on the input itself (not just the icon) also opens the calendar
+        function bindDobInputOpen() {
+            var root = document.getElementById('attendeeFields');
+            if (!root) return;
+            function handler(ev) {
+                var inp = ev.target;
+                if (!inp || !inp.matches || !inp.matches('input[data-field="dob"]')) return;
+                var container = inp.closest('.relative');
+                if (container) {
+                    ev.preventDefault();
+                    openDobCalendar(container);
+                }
+            }
+            root.addEventListener('click', handler);
+            root.addEventListener('focusin', handler);
+        }
+        bindDobInputOpen();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindDobInputOpen);
+        }
+    </script>
 
 <!-- Reusable DOB calendar popup (positioned near the clicked field) -->
 <div id="dobCalendar" class="dob-cal-popup hidden fixed z-50" role="dialog" aria-label="Date picker">
